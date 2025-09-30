@@ -1,5 +1,12 @@
 # Tarea 1
 
+Ejecutar el programa:
+```bash
+go run hello.go
+```
+
+---
+
 La implementación del **stack**, **queue** y **dictionary** se realizó en el lenguaje **Go**, cada una con métodos de acceso y manipulación de datos. 
 
 * **Stack**: implementación con `slices` nativos de Go, la complejidad temporal de inserción de datos y eliminación del último dato es de $O(1)$ en promedio.
