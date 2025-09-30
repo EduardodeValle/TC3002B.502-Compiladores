@@ -43,7 +43,7 @@ func printQueue(queue *list.List) {
 func queue() {
 	queue := list.New()
 
-	fmt.Println("Inicial: ")
+	fmt.Print("Inicial: ")
 	printQueue(queue)
 
 	queue.PushBack(10)
@@ -72,10 +72,48 @@ func queue() {
 	fmt.Println("Dequeue: ")
 }
 
+func hashmap() {
+	puertosServicio := make(map[string]int)
+
+	fmt.Println("Mapa de puertos inicial:", puertosServicio)
+
+	puertosServicio["http"] = 80
+	fmt.Println("Asignando puerto 'http':", puertosServicio)
+
+	puertosServicio["https"] = 443
+	fmt.Println("Asignando puerto 'https':", puertosServicio)
+
+	puertosServicio["ssh"] = 22
+	fmt.Println("Asignando puerto 'ssh':", puertosServicio)
+
+	puertoSsh := puertosServicio["ssh"]
+	fmt.Println("Consultando puerto 'ssh':", puertoSsh)
+
+	puerto, existe := puertosServicio["https"]
+	if existe {
+		fmt.Println("Consultando 'https' (sí existe):", puerto)
+	}
+
+	_, existe = puertosServicio["ftp"]
+	if !existe {
+		fmt.Println("Consultando 'ftp' (no existe):", "El servicio no está registrado")
+	}
+
+	delete(puertosServicio, "ssh")
+	fmt.Println("Eliminando servicio 'ssh':", puertosServicio)
+
+	delete(puertosServicio, "http")
+	fmt.Println("Eliminando servicio 'http':", puertosServicio)
+}
+
 func main() {
 	stack()
 
 	fmt.Println("")
 
 	queue()
+
+	fmt.Println("")
+
+	hashmap()
 }
