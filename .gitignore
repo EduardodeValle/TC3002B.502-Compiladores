@@ -34,3 +34,7 @@ vendor/
 .idea/
 *.swp
 *~
+
+# Excluir archivos temporales de tareas
+*.odt#
+*.docx#
