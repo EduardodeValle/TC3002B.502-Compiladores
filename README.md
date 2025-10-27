@@ -37,4 +37,7 @@ pip install -r requirements.txt
 
 ## Desarrollo
 
+* A diferencia de las reglas vistas en clase, en ANTLR los tokens o símbolos terminales tienen que ir en mayúsculas y las reglas o símbolos no terminales tienen que ir en minúsculas
+* Las reglas que no tienen a $\varepsilon$ como una posible decisión se escribieron inline mientras que las que si tienen a $\varepsilon$ como una posible decisión se escribieron en diferentes líneas porque la forma de expresar esa notación en ANTLR es literalmente con nada, simplemente se puso un comentario para indicar su lugar en la regla para facilitar la lectura 
+
 No es suficiente con escribir la lógica del proyecto, se deben ejecutar ciertos comandos con la herramienta ANTLR
