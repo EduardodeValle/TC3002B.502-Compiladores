@@ -1,3 +1,33 @@
+grammar BabyDuck;
+
+programa: PROGRAM ID SEMI_COLON optional_variables optional_functions MAIN body END;
+
+optional_variables
+    : vars
+    | // epsilon
+    ;
+
+optional_functions
+    : funcs
+    | // epsilon
+    ;
+
+var: VAR declare_vars;
+
+declare_vars: declare_ids COLON type SEMI_COLON declare_vars_prime;
+
+declare_vars_prime
+    : declare_vars
+    | // epsilon
+    ;
+
+declare_ids: ID declare_ids_prime;
+
+declare_ids_prime
+    : COMMA declare_ids
+    | // epsilon
+    ;
+
 // Palabras reservadas
 PROGRAM: 'program';
 MAIN: 'main';
@@ -38,4 +68,4 @@ CTE_F: [0-9]+ '.' [0-9]+;
 CTE_STRING: '"' .*? '"';
 
 // Ignorar espacios en blanco y saltos de línea
-WS: [ \t\r\n]+ -> skip;
+SPACES: [ \t\r\n]+ -> skip;
