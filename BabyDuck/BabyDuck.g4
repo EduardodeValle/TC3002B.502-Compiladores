@@ -1,71 +1,46 @@
 grammar BabyDuck;
 
-programa: PROGRAM ID SEMI_COLON optional_variables optional_functions MAIN body END;
-
-optional_variables
-    : vars
-    | // epsilon
-    ;
-
-optional_functions
-    : funcs
-    | // epsilon
-    ;
-
-var: VAR declare_vars;
-
-declare_vars: declare_ids COLON type SEMI_COLON declare_vars_prime;
-
-declare_vars_prime
-    : declare_vars
-    | // epsilon
-    ;
-
-declare_ids: ID declare_ids_prime;
-
-declare_ids_prime
-    : COMMA declare_ids
-    | // epsilon
-    ;
+programa: PROGRAM ID SEMI_COLON vars? funcs? MAIN cuerpo END;
 
 // Palabras reservadas
-PROGRAM: 'program';
-MAIN: 'main';
-END: 'end';
-VAR: 'var';
-INT: 'int';
-FLOAT: 'float';
-IF: 'if';
-ELSE: 'else';
-PRINT: 'print';
-WHILE: 'while';
-DO: 'do';
-VOID: 'void';
+PROGRAMA: 'programa';
+INICIO: 'inicio';
+FIN: 'fin';
+VARS: 'vars';
+ENTERO: 'entero';
+FLOTANTE: 'flotante';
+SI: 'si';
+SINO: 'sino';
+ESCRIBE: 'escribe';
+MIENTRAS: 'mientras';
+HAZ: 'haz';
+NULA: 'nula';
 
 // Operadores y puntuaciones
-LEFT_PARENTHESIS: '(';
-RIGHT_PARENTHESIS: ')';
-LEFT_BRACKET: '[';
-RIGHT_BRACKET: ']';
-LEFT_BRACE: '{';
-RIGHT_BRACE: '}';
-SEMI_COLON: ';';
-COLON: ':';
-COMMA: ',';
-PLUS: '+';
-MINUS: '-';
-MULTIPLICATION: '*';
+PARENTESIS_IZQUIERDO: '(';
+PARENTESIS_DERECHO: ')';
+BRACKET_IZQUIERDO: '[';
+BRACKET_DERECHO: ']';
+LLAVE_IZQUIERDA: '{';
+LLAVE_DERECHA: '}';
+PUNTO_Y_COMA: ';';
+DOS_PUNTOS: ':';
+COMA: ',';
+ASIGNACION: '=';
+MAS: '+';
+MENOS: '-';
+MULTIPLICACION: '*';
 DIVISION: '/';
-GREATER_THAN: '>';
-LESS_THAN: '<';
-NOT_EQUAL: '!=';
-EQUAL: '=';
+MAYOR_QUE: '>';
+MENOR_QUE: '<';
+DIFERENTE_DE: '!=';
+IGUAL_QUE: '==';
 
 // IDs y constantes
 ID: [a-zA-Z_] [a-zA-Z_0-9]*;
-CTE_I: [0-9]+;
-CTE_F: [0-9]+ '.' [0-9]+;
-CTE_STRING: '"' .*? '"';
+CTE_ENT: [0-9]+;
+CTE_FLOT: [0-9]+ '.' [0-9]+;
+LETRERO: '"' .*? '"';
 
 // Ignorar espacios en blanco y saltos de línea
-SPACES: [ \t\r\n]+ -> skip;
+ESPACIOS: [ \t\r\n]+ -> skip;
