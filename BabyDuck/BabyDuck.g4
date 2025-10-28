@@ -1,6 +1,12 @@
 grammar BabyDuck;
 
-programa: PROGRAM ID SEMI_COLON vars? funcs? MAIN cuerpo END;
+programa: PROGRAMA ID PUNTO_Y_COMA vars? funcs* INICIO cuerpo FIN ;
+
+vars: VARS (declarar_variables)+ ;
+
+declarar_variables: (declarar_ids)+ DOS_PUNTOS tipo PUNTO_Y_COMA ;
+
+declarar_ids: ID (COMA ID)* ;
 
 // Palabras reservadas
 PROGRAMA: 'programa';
