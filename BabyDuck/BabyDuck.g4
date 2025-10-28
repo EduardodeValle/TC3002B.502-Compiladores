@@ -24,6 +24,13 @@ ciclo: MIENTRAS PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO HAZ cuerpo PUN
 
 llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO
 
+imprime: ESCRIBE PARENTESIS_IZQUIERDO imprimir_elementos PARENTESIS_DERECHO PUNTO_Y_COMA ;
+imprimir_elementos: ((expresion | LETRERO) (COMA (expresion | LETRERO))*) ;
+
+expresion: exp ((MAYOR_QUE | MENOR_QUE | DIFERENTE_DE | IGUAL_QUE) exp)?
+
+exp: termino ((MAS | MENOS) termino)*
+
 // Palabras reservadas
 PROGRAMA: 'programa';
 INICIO: 'inicio';
