@@ -2,11 +2,27 @@ grammar BabyDuck;
 
 programa: PROGRAMA ID PUNTO_Y_COMA vars? funcs* INICIO cuerpo FIN ;
 
-vars: VARS (declarar_variables)+ ;
-
-declarar_variables: (declarar_ids)+ DOS_PUNTOS tipo PUNTO_Y_COMA ;
-
+vars: VARS declarar_variables+ ;
+declarar_variables: declarar_ids+ DOS_PUNTOS tipo PUNTO_Y_COMA ;
 declarar_ids: ID (COMA ID)* ;
+
+funcs: (NULA | tipo) ID PARENTESIS_IZQUIERDO parametros? PARENTESIS_DERECHO LLAVE_IZQUIERDA vars? cuerpo LLAVE_DERECHA PUNTO_Y_COMA ;
+parametros: ID DOS_PUNTOS tipo (COMA ID DOS_PUNTOS tipo)* ;
+
+cuerpo: LLAVE_IZQUIERDA estatuto* LLAVE_DERECHA ;
+
+tipo: ENTERO | FLOTANTE
+
+estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO ;
+continuacion_de_estatuto_id: ASIGNACION expresion PUNTO_Y_COMA | PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO PUNTO_Y_COMA ;
+
+asigna: ID ASIGNACION expresion PUNTO_Y_COMA ;
+
+condicion: SI PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO cuerpo (SINO cuerpo)? PUNTO_Y_COMA ;
+
+ciclo: MIENTRAS PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO HAZ cuerpo PUNTO_Y_COMA ;
+
+llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO
 
 // Palabras reservadas
 PROGRAMA: 'programa';
@@ -25,8 +41,8 @@ NULA: 'nula';
 // Operadores y puntuaciones
 PARENTESIS_IZQUIERDO: '(';
 PARENTESIS_DERECHO: ')';
-BRACKET_IZQUIERDO: '[';
-BRACKET_DERECHO: ']';
+CORCHETE_IZQUIERDO: '[';
+CORCHETE_DERECHO: ']';
 LLAVE_IZQUIERDA: '{';
 LLAVE_DERECHA: '}';
 PUNTO_Y_COMA: ';';
