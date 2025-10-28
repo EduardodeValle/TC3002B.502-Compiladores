@@ -11,7 +11,7 @@ parametros: ID DOS_PUNTOS tipo (COMA ID DOS_PUNTOS tipo)* ;
 
 cuerpo: LLAVE_IZQUIERDA estatuto* LLAVE_DERECHA ;
 
-tipo: ENTERO | FLOTANTE
+tipo: ENTERO | FLOTANTE ;
 
 estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO ;
 continuacion_de_estatuto_id: ASIGNACION expresion PUNTO_Y_COMA | PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO PUNTO_Y_COMA ;
@@ -22,14 +22,22 @@ condicion: SI PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO cuerpo (SINO cue
 
 ciclo: MIENTRAS PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO HAZ cuerpo PUNTO_Y_COMA ;
 
-llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO
+llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO ;
 
 imprime: ESCRIBE PARENTESIS_IZQUIERDO imprimir_elementos PARENTESIS_DERECHO PUNTO_Y_COMA ;
 imprimir_elementos: ((expresion | LETRERO) (COMA (expresion | LETRERO))*) ;
 
-expresion: exp ((MAYOR_QUE | MENOR_QUE | DIFERENTE_DE | IGUAL_QUE) exp)?
+expresion: exp ((MAYOR_QUE | MENOR_QUE | DIFERENTE_DE | IGUAL_QUE) exp)? ;
 
-exp: termino ((MAS | MENOS) termino)*
+exp: termino ((MAS | MENOS) termino)* ;
+
+termino: factor ((MULTIPLICACION | DIVISION) factor)* ;
+
+factor: factor_con_expresion | factor_sin_expresion | llamada ;
+factor_con_expresion: PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO ;
+factor_sin_expresion: (MAS | MENOS)? (ID | cte) ;
+
+cte: CTE_ENT | CTE_FLOT ;
 
 // Palabras reservadas
 PROGRAMA: 'programa';
