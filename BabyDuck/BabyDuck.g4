@@ -3,7 +3,7 @@ grammar BabyDuck;
 programa: PROGRAMA ID PUNTO_Y_COMA vars? funcs* INICIO cuerpo FIN ;
 
 vars: VARS declarar_variables+ ;
-declarar_variables: declarar_ids+ DOS_PUNTOS tipo PUNTO_Y_COMA ;
+declarar_variables: declarar_ids DOS_PUNTOS tipo PUNTO_Y_COMA ;
 declarar_ids: ID (COMA ID)* ;
 
 funcs: (NULA | tipo) ID PARENTESIS_IZQUIERDO parametros? PARENTESIS_DERECHO LLAVE_IZQUIERDA vars? cuerpo LLAVE_DERECHA PUNTO_Y_COMA ;
@@ -33,9 +33,14 @@ exp: termino ((MAS | MENOS) termino)* ;
 
 termino: factor ((MULTIPLICACION | DIVISION) factor)* ;
 
-factor: factor_con_expresion | factor_sin_expresion | llamada ;
-factor_con_expresion: PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO ;
-factor_sin_expresion: (MAS | MENOS)? (ID | cte) ;
+factor: PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO 
+    | (MAS | MENOS)? dato_o_llamada // posible ambigüedad en id, no sabe si elegir entre `id` o `id(...)`
+    ;
+dato_o_llamada: 
+    // permite elegir entre `ID` o `ID(...)`
+    ID ( PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO )?
+    | cte 
+    ;
 
 cte: CTE_ENT | CTE_FLOT ;
 
