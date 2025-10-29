@@ -1,0 +1,9 @@
+programa HelloWorld;
+
+vars x: entero;
+
+inicio
+{
+    escribe("hola");
+}
+fin
