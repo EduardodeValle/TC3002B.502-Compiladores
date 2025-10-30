@@ -1,0 +1,9 @@
+programa Incorrecto;
+vars x: flotante;
+
+inicio
+{
+  x = 10.5
+  escribe("Hay un error, falta un ; en la asignacion de la variable x");
+}
+fin

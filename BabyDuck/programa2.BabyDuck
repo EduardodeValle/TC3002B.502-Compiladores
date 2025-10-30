@@ -1,0 +1,11 @@
+programa asignacion;
+
+vars w, x: entero; y, z: flotante;
+
+inicio
+{
+    w = 10;
+    z = 10.10;
+    escribe("Se declararon las variables w, x, y, z pero solo se inicializaron w, z");
+}
+fin
