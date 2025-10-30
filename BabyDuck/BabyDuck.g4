@@ -16,13 +16,19 @@ tipo: ENTERO | FLOTANTE ;
 estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO ;
 continuacion_de_estatuto_id: ASIGNACION expresion PUNTO_Y_COMA | PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO PUNTO_Y_COMA ;
 
-asigna: ID ASIGNACION expresion PUNTO_Y_COMA ;
+// La regla <ASIGNA> aparece en todas las reglas como una ambigüedad, por eso su lógica se implementó
+// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser útil para la
+// gramática. Se eliminó pero se conservó como comentario para mostrar su lugar en el diagrama de sintaxis
+// asigna: ID ASIGNACION expresion PUNTO_Y_COMA ;
 
 condicion: SI PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO cuerpo (SINO cuerpo)? PUNTO_Y_COMA ;
 
 ciclo: MIENTRAS PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO HAZ cuerpo PUNTO_Y_COMA ;
 
-llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO ;
+// La regla <LLAMADA> aparece en todas las reglas como una ambigüedad, por eso su lógica se implementó
+// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser útil para la
+// gramática. Se eliminó pero se conservó como comentario para mostrar su lugar en el diagrama de sintaxis
+// llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO ;
 
 imprime: ESCRIBE PARENTESIS_IZQUIERDO imprimir_elementos PARENTESIS_DERECHO PUNTO_Y_COMA ;
 imprimir_elementos: ((expresion | LETRERO) (COMA (expresion | LETRERO))*) ;

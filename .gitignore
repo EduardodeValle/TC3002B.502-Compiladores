@@ -229,3 +229,8 @@ pyrightconfig.json
 # Archivos generados al correr el proyecto
 *.java
 *.class
+
+# =============================== NixOS ===============================
+
+/.direnv/
+/result
