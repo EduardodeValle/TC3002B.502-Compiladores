@@ -1,6 +1,6 @@
 import sys
 from BabyDuckError import BabyDuckError 
-from compiler import run_compiler
+from ANTLR.compiler import run_compiler
 
 def main():
     if len(sys.argv) < 2:
