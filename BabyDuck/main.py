@@ -14,7 +14,8 @@ def main():
         run_compiler(filepath)
         
     except BabyDuckError as e:
-        # Error encontrado en semántica, generación de cuádruplos o máquina virtual        
+        # Error encontrado en semántica, generación de cuádruplos o máquina virtual 
+        # Los errores del léxico y parser los atrapa ANTLR       
         print("\n\nCompilación fallida", file=sys.stderr)
         print(e, file=sys.stderr)
         sys.exit(1)

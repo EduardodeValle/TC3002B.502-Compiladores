@@ -1,118 +1,29 @@
-# semantic_cube[tipo_izquierdo][tipo_derecho][operador] → devuelve el tipo de dato de la expresión
+from BabuDuckError import BabyDuckError
+from BabyDuckParser import BabyDuckParser
+from BabyDuckVisitor import BabyDuckVisitor
 
-# Los strings no existen como un tipo de dato explicito, solo adentro de las regla 
-# <ESCRIBE> para imprimir datos, no se incluye en el cubo semantico
+from semantic_cube import semantic_cube
 
-# No hay un tipo de dato explicito para booleano, pero se usa en resultados de expresiones lógicas
+class SemanticVisitor(BabyDuckVisitor):
+    def __init__(self):
+        self.cube = semantic_cube
 
-# De acuerdo al diagrama de sintaxis no existen los operadores AND, OR, NOT
+    def get_op_string(self, token_type):
+	    """ 
+        Helper function, no es un punto neurálgico
+        Convierte un token de ANTLR a un string de operador
+        """
 
-# ok → resultado semantico valido
-# error → resultado semantico invalido
-semantic_cube = {
-    "entero": {
-        "entero": {
-            "+": "entero", 
-            "-": "entero", 
-            "*": "entero", 
-            "/": "entero", 
-            ">": "booleano", 
-            "<": "booleano", 
-            "==": "booleano", 
-            "!=": "booleano",
-            "=": "ok"
-        },
-        "flotante": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        },
-        "booleano": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        }
-    },
-    "flotante": {
-        "entero": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        },
-        "flotante": {
-            "+": "flotante", 
-            "-": "flotante", 
-            "*": "flotante", 
-            "/": "flotante",
-            ">": "booleano", 
-            "<": "booleano", 
-            "==": "booleano", 
-            "!=": "booleano",
-            "=": "ok"
-        },
-        "booleano": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        }
-    },
-    "booleano": {
-        "entero": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        },
-        "flotante": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "error", 
-            "!=": "error",
-            "=": "error"
-        },
-        "booleano": {
-            "+": "error", 
-            "-": "error", 
-            "*": "error", 
-            "/": "error",
-            ">": "error", 
-            "<": "error", 
-            "==": "booleano", 
-            "!=": "booleano",
-            "=": "error"
-        }
-    }
-}
+	    op_map = {
+		    BabyDuckParser.MAS: "+", 
+            BabyDuckParser.MENOS: "-",
+		    BabyDuckParser.MULTIPLICACION: "*", 
+            BabyDuckParser.DIVISION: "/",
+		    BabyDuckParser.MAYOR_QUE: ">", 
+            BabyDuckParser.MENOR_QUE: "<",
+		    BabyDuckParser.DIFERENTE_DE: "!=", 
+            BabyDuckParser.IGUAL_QUE: "==",
+		    BabyDuckParser.ASIGNACION: "="
+		}
+
+	    return op_map.get(token_type)
