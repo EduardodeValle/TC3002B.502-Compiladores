@@ -9,6 +9,7 @@
 
 # ok → resultado semantico valido
 # error → resultado semantico invalido
+
 semantic_cube = {
     "entero": {
         "entero": {
