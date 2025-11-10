@@ -87,4 +87,40 @@ class SymbolTableManager:
         """
         self.current_scope = self.global_scope
 
-    
+    def declare_variable(self, var_name, var_type):
+        """
+        Punto neurálgico para una variable duplicada
+            - Declara una variable en el scope actual
+            - Devuelve False si la variable ya existía en este scope
+        """
+
+        if var_name in self.current_scope:
+            return False
+            
+        self.current_scope[var_name] = Symbol(var_name, var_type)
+        return True
+
+    def lookup_variable(self, var_name):
+        """
+        Punto neurálgico para variable no declarada
+            - Busca primero en el scope actual y luego en el global
+            - Devuelve el objeto Symbol si lo encuentra, sino None
+        """
+
+        # primero buscar en el scope actual
+        if var_name in self.current_scope:
+            return self.current_scope[var_name]
+            
+        # sino buscar en scope global si el scope actual no es el global
+        if self.current_scope is not self.global_scope and var_name in self.global_scope:
+            return self.global_scope[var_name]
+
+        return None
+
+    def lookup_function(self, func_name):
+        """ 
+        Punto neurálgico para una función no declarada
+            - Busca una función en el directorio de funciones
+            - Devuelve FuncInfo o None
+        """
+        return self.function_directory.get(func_name)
