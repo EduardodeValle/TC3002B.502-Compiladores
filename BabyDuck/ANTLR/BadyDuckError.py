@@ -2,7 +2,7 @@ class BabyDuckError(Exception):
     """
     Clase que maneja todos los errores del compilador
     """
-    def __init__(self, phase, subsection):
+    def __init__(self, phase, subsection=None):
         # pagina: https://patorjk.com/software/taag/#p=testall&f=Graffiti&t=Cu%C3%A1druplos&x=none&v=4&h=4&w=80&we=false
         # Font de error por fase: Big Money-se
         # Font de error por subsección: Big
@@ -41,7 +41,6 @@ class BabyDuckError(Exception):
         
         self.phases = {
             "semantico": self.semantic_error,
-            "cuadruplos": self.quadruples_error,
             "vm": self.vm_error
         }
 

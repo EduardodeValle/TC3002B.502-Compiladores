@@ -21,7 +21,7 @@ class FuncInfo:
     con metadatos de la función y su tabla de variables local
     """
     
-    def __init__(self, name, return_type="nulo"):
+    def __init__(self, name, return_type="nula"):
         self.name = name              
         self.return_type = return_type
         self.param_types = []
@@ -58,7 +58,7 @@ class SymbolTableManager:
         """
 
         # crear el scope global
-        global_func_info = FuncInfo("global", "nulo")
+        global_func_info = FuncInfo("global", "nula")
         self.function_directory["global"] = global_func_info
         
         # establecer los punteros de scope
