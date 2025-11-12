@@ -50,5 +50,5 @@ class BabyDuckError(Exception):
 
 
     def format_message(self, phase, subsection):
-        full_message = self.phase[phase] + "\n\n" + subsection + "\n\n============================================================================\n" + "============================================================================\n\n"
+        full_message = self.phase[phase] + "\n\n" + subsection + "\nCompilación abortada\n" + "============================================================================\n" + "============================================================================\n\n"
         return full_message

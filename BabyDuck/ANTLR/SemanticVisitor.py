@@ -72,7 +72,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return func_info.return_type
 
     # 1. Inicializar el scope global en <PROGRAMA>
-    def visit_programa(self, ctx:BabyDuckParser.ProgramaContext):
+    def visitPrograma(self, ctx:BabyDuckParser.ProgramaContext):
         self.table_manager.start_program()
         
         # visitar variables globales
@@ -87,4 +87,53 @@ class SemanticVisitor(BabyDuckVisitor):
         # visitar el cuerpo principal: (inicio) → <CUERPO> → (fin)
         self.visit(ctx.cuerpo())
         
+        return None
+
+    # 2. Agregar variables al scope actual
+    def visitDeclarar_variables(self, ctx:BabyDuckParser.Declarar_variablesContext):
+        var_type = ctx.tipo().getText()
+        
+        # iterar sobre todos los IDs declarados
+        id_list_ctx = ctx.declarar_ids()
+        for id_terminal in id_list_ctx.ID():
+            var_name = id_terminal.getText()
+            
+            # validar que no sea una variable duplicada
+            success = self.table_manager.declare_variable(var_name, var_type)
+            
+            if not success:
+                raise BabyDuckError("semantico", f"Variable {var_name} ya fue declarada en este scope")
+
+        return None
+
+    # 3. Declarar una función en <FUNCS>
+    def visitFuncs(self, ctx:BabyDuckParser.FuncsContext):
+        """
+        Crea el scope de la función, lo agrega al directorio y cambia al nuevo scope
+        """
+
+        func_name = ctx.ID().getText()
+        return_type = "nula"
+        if ctx.tipo():
+            return_type = ctx.tipo().getText()
+        
+        # validar que la función no esté duplicada
+        success = self.table_manager.add_function(func_name, return_type)
+        if not success:
+            raise BabyDuckError("semantico", f"La función {func_name} ya fue declarada")
+            
+        # puntero a la FuncInfo actual para los parámetros
+        self.current_func_info = self.table_manager.lookup_function(func_name)
+        
+        if ctx.parametros():
+            self.visit(ctx.parametros())
+            
+        if ctx.vars_():
+            self.visit(ctx.vars_())
+            
+        self.visit(ctx.cuerpo())
+        
+        # restaurar al global, limpiar el puntero
+        self.table_manager.end_function()
+        self.current_func_info = None
         return None
