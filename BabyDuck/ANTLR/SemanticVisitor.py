@@ -71,6 +71,10 @@ class SemanticVisitor(BabyDuckVisitor):
         # 4. Devolver el tipo de retorno de la función
         return func_info.return_type
 
+    # ===========================================================================
+    # =============== Validar <PROGRAMA> y declaraciones globales ===============
+    # ===========================================================================
+
     # 1. Inicializar el scope global en <PROGRAMA>
     def visitPrograma(self, ctx:BabyDuckParser.ProgramaContext):
         self.table_manager.start_program()
@@ -137,3 +141,28 @@ class SemanticVisitor(BabyDuckVisitor):
         self.table_manager.end_function()
         self.current_func_info = None
         return None
+
+    # 4. Visitar la regla <PARAMETROS> parte de <FUNCS>
+    def visitParametros(self, ctx:BabyDuckParser.ParametrosContext):
+        """
+        Agrega parámetros a la lista de la función y a su tabla de variables.
+        """
+        if not self.current_func_info:
+            raise BabyDuckError("semantico", "Error en directorio de funciones: no se encontró 'current_func_info' al visitar parámetros")
+        
+        for i in range(len(ctx.ID())):
+            param_name = ctx.ID(i).getText()
+            param_type = ctx.tipo(i).getText()
+            
+            self.current_func_info.add_param(param_type)
+            
+            # declarar como variable en el scope local
+            success = self.table_manager.declare_variable(param_name, param_type)
+            if not success:
+                raise BabyDuckError("semantico", f"Parámetro {param_name} ya está declarado en el scope actual")
+                
+        return None
+
+    # ===========================================================================
+    # ============== Validar el resultado de todas las expresiones ==============
+    # ===========================================================================   
