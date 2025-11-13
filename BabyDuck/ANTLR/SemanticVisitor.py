@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from BabuDuckError import BabyDuckError
 from BabyDuckParser import BabyDuckParser
 from BabyDuckVisitor import BabyDuckVisitor
@@ -10,6 +12,14 @@ class SemanticVisitor(BabyDuckVisitor):
         self.cube = semantic_cube
         self.table_manager = SymbolTableManager()        
         self.current_func_info = None # funcion actual para conocer los parámetros
+
+        self.quadruples = []        
+        self.operand_stack = [] 
+        self.type_stack = []    
+        self.operator_stack = []
+        self.jump_stack = []
+        self.temp_counter = 1
+        self.PENDING_JUMP = None
 
     def _get_op_string(self, token_type):
 	    """ 
@@ -79,11 +89,11 @@ class SemanticVisitor(BabyDuckVisitor):
     def visitPrograma(self, ctx:BabyDuckParser.ProgramaContext):
         self.table_manager.start_program()
         
-        # visitar variables globales
+        # variables globales
         if ctx.vars_():
             self.visit(ctx.vars_())
             
-        # visitar declaracoines de funciones
+        # declaracines de funciones
         if ctx.funcs():
             for func in ctx.funcs():
                 self.visit(func)
@@ -160,9 +170,5 @@ class SemanticVisitor(BabyDuckVisitor):
             success = self.table_manager.declare_variable(param_name, param_type)
             if not success:
                 raise BabyDuckError("semantico", f"Parámetro {param_name} ya está declarado en el scope actual")
-                
-        return None
 
-    # ===========================================================================
-    # ============== Validar el resultado de todas las expresiones ==============
-    # ===========================================================================   
+        return None
