@@ -19,7 +19,7 @@ class SemanticVisitor(BabyDuckVisitor):
         self.operator_stack = []
         self.jump_stack = []
         self.temp_counter = 1
-        self.PENDING_JUMP = None
+        self.pending_jump = None
 
     def _get_op_string(self, token_type):
 	    """ 
@@ -80,6 +80,15 @@ class SemanticVisitor(BabyDuckVisitor):
         
         # 4. Devolver el tipo de retorno de la función
         return func_info.return_type
+
+    def _generate_quad(self, operator, left_op, right_op, result):
+        """
+        Helper function, no es un punto neurálgico
+        Crea un cuádruplo, lo agrega a la fila y devuelve su índice.
+        """
+        quad = Quadruple(operator, left_op, right_op, result)
+        self.quadruples.append(quad)
+        return len(self.quadruples) - 1
 
     # ===========================================================================
     # =============== Validar <PROGRAMA> y declaraciones globales ===============
