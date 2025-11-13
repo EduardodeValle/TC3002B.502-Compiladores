@@ -90,6 +90,22 @@ class SemanticVisitor(BabyDuckVisitor):
         self.quadruples.append(quad)
         return len(self.quadruples) - 1
 
+    def _get_current_index(self):
+        """ 
+        Helper function, no es un punto neurálgico
+        Devuelve el índice del siguiente cuádruplo a generar
+        """
+        return len(self.quadruples)
+
+    def _fill_jump(self, quad_index, jump_target_index):
+        """
+        Helper function, no es un punto neurálgico
+        Rellena un cuádruplo pendiente (GOTOs) con su destino
+        """
+        quad_to_fill = self.quadruples[quad_index]        
+        filled_quad = quad_to_fill._replace(result=jump_target_index)
+        self.quadruples[quad_index] = filled_quad
+
     # ===========================================================================
     # =============== Validar <PROGRAMA> y declaraciones globales ===============
     # ===========================================================================
