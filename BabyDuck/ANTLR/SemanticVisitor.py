@@ -90,6 +90,18 @@ class SemanticVisitor(BabyDuckVisitor):
         self.quadruples.append(quad)
         return len(self.quadruples) - 1
 
+    def _new_temp(self, temp_type):
+        """
+        Helper function, no es un punto neurálgico
+        Genera un nuevo nombre de temporal, la declara en la
+        tabla de símbolos actual y devuelve su nombre.
+        """
+            
+        temp_name = f"t{self.temp_counter}"
+        self.temp_counter += 1
+        success = self.table_manager.declare_variable(temp_name, temp_type)
+        return temp_name
+
     def _get_current_index(self):
         """ 
         Helper function, no es un punto neurálgico
@@ -197,3 +209,38 @@ class SemanticVisitor(BabyDuckVisitor):
                 raise BabyDuckError("semantico", f"Parámetro {param_name} ya está declarado en el scope actual")
 
         return None
+
+    # ===========================================================================
+    # ============== Validar el resultado de todas las expresiones ==============
+    # ===========================================================================
+
+    # 5. Validar operaciones * y / en <TERMINO> y genera sus cuádruplos
+    def visitTermino(self, ctx:BabyDuckParser.TerminoContext):
+        self.visit(ctx.factor(0))
+        
+        # iterar sobre el resto de factores
+        for i in range(1, len(ctx.factor())):
+            # visitar el siguiente factor
+            self.visit(ctx.factor(i))
+            tipo_der = self.type_stack.pop()
+            op_der = self.operand_stack.pop()
+            
+            tipo_izq = self.type_stack.pop()
+            op_izq = self.operand_stack.pop()
+            
+            op_token = ctx.getChild((i*2)-1).getSymbol()
+            op_str = self._get_op_string(op_token.type)
+            
+            # validar semántica en cada iteración
+            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
+            if result_type == "error" or not result_type:
+                raise BabyDuckError("semantico", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
+            
+            # generar cuádruplo
+            temp_var_name = self._new_temp(result_type)
+            self._generate_quad(op_str, op_izq, op_der, temp_var_name)
+            self.operand_stack.append(temp_var_name)
+            self.type_stack.append(result_type)
+            
+        # el resultado de todo el termino queda en el tope de la pila
+        return None 
