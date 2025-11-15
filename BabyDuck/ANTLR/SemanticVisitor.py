@@ -214,7 +214,7 @@ class SemanticVisitor(BabyDuckVisitor):
     # ============== Validar el resultado de todas las expresiones ==============
     # ===========================================================================
 
-    # 5. Validar operaciones * y / en <TERMINO> y genera sus cuádruplos
+    # 5. Validar operaciones * y / en <TERMINO> y generar sus cuádruplos
     def visitTermino(self, ctx:BabyDuckParser.TerminoContext):
         self.visit(ctx.factor(0))
         
@@ -222,13 +222,12 @@ class SemanticVisitor(BabyDuckVisitor):
         for i in range(1, len(ctx.factor())):
             # visitar el siguiente factor
             self.visit(ctx.factor(i))
+
             tipo_der = self.type_stack.pop()
             op_der = self.operand_stack.pop()
-            
             tipo_izq = self.type_stack.pop()
             op_izq = self.operand_stack.pop()
-            
-            op_token = ctx.getChild((i*2)-1).getSymbol()
+            op_token = ctx.getChild((i*2)-1).getSymbol() # obtener el operador
             op_str = self._get_op_string(op_token.type)
             
             # validar semántica en cada iteración
@@ -244,3 +243,34 @@ class SemanticVisitor(BabyDuckVisitor):
             
         # el resultado de todo el termino queda en el tope de la pila
         return None 
+
+    # 6. Validar operaciones + y - en <EXP> y generar sus cuádruplos
+    def visitExp(self, ctx:BabyDuckParser.ExpContext):
+        self.visit(ctx.termino(0))
+        
+        # iterar sobre el resto de factores
+        for i in range(1, len(ctx.termino())):
+            # visitar el siguiente factor
+            self.visit(ctx.termino(i))
+            
+            tipo_der = self.type_stack.pop()
+            op_der = self.operand_stack.pop()
+            tipo_izq = self.type_stack.pop()
+            op_izq = self.operand_stack.pop()
+            
+            op_token = ctx.getChild((i*2)-1).getSymbol() # obtener el operador
+            op_str = self._get_op_string(op_token.type)
+            
+            # validar semántica en cada iteración
+            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
+            if result_type == "error" or not result_type:
+                raise SemanticError("semantica", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
+            
+            
+            # generar cuádruplo
+            temp_var_name = self._new_temp(result_type)
+            self._generate_quad(op_str, op_izq, op_der, temp_var_name)            
+            self.operand_stack.append(temp_var_name)
+            self.type_stack.append(result_type)
+            
+        return None
