@@ -257,14 +257,13 @@ class SemanticVisitor(BabyDuckVisitor):
             op_der = self.operand_stack.pop()
             tipo_izq = self.type_stack.pop()
             op_izq = self.operand_stack.pop()
-            
             op_token = ctx.getChild((i*2)-1).getSymbol() # obtener el operador
             op_str = self._get_op_string(op_token.type)
             
             # validar semántica en cada iteración
             result_type = self.cube[tipo_izq][tipo_der].get(op_str)
             if result_type == "error" or not result_type:
-                raise SemanticError("semantica", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
+                raise BabyDuckError("semantico", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
             
             
             # generar cuádruplo
@@ -273,4 +272,31 @@ class SemanticVisitor(BabyDuckVisitor):
             self.operand_stack.append(temp_var_name)
             self.type_stack.append(result_type)
             
+        return None
+
+    # 7. Validar expresiones relacionales >, <, !=, == y generar sus cuádruplos
+    def visitExpresion(self, ctx:BabyDuckParser.ExpresionContext):
+        self.visit(ctx.exp(0))
+        
+        # verificar si hay una operación relacional, si no hay ninguna no se
+        # hace nada, el resultado es la misma <EXP> 1 del stack
+        if ctx.exp(1):
+            self.visit(ctx.exp(1))
+            
+            tipo_der = self.type_stack.pop()
+            op_der = self.operand_stack.pop()
+            tipo_izq = self.type_stack.pop()
+            op_izq = self.operand_stack.pop()
+            op_token = ctx.getChild(1).getSymbol() # obtener el operador
+            op_str = self._get_op_string(op_token.type)
+            
+            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
+            if result_type == "error" or not result_type:
+                raise BabyDuckError("semantico", f"No se permite la comparación {tipo_izq} {op_str} {tipo_der}")
+            
+            temp_var_name = self._new_temp(result_type)
+            self._generate_quad(op_str, op_izq, op_der, temp_var_name)
+            self.operand_stack.append(temp_var_name)
+            self.type_stack.append(result_type)
+        
         return None
