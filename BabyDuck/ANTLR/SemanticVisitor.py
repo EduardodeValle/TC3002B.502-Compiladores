@@ -50,35 +50,30 @@ class SemanticVisitor(BabyDuckVisitor):
         3. Comprueba el tipo de cada argumento.
         Devuelve el tipo de retorno de la función.
         """
-        # 1. Buscar la función (Error: Función no declarada)
+        # 1. Buscar la función
         func_info = self.table_manager.lookup_function(func_name)
         if not func_info:
-             # Chequeo extra por si era una variable usada como función
             if self.table_manager.lookup_variable(func_name):
                 raise BabyDuckError("semantico", f"Uso incorrecto, '{func_name}' es una variable, no una función")
             else:
                 raise BabyDuckError("semantico", f"Función '{func_name}' no declarada")
         
-        # 2. Validar número de argumentos (Error: Conteo de argumentos)
+        # 2. Validar número de argumentos
         num_args_sent = len(args_ctx_list) if args_ctx_list else 0
         num_params_expected = len(func_info.param_types)
         
         if num_args_sent != num_params_expected:
             raise BabyDuckError("semantico", f"La función '{func_name}' esperaba {num_params_expected} parámetros, pero recibió {num_args_sent}")
             
-        # 3. Validar tipo de cada argumento (Error: Mismatch en tipo de parámetro)
+        # 3. Validar tipo de cada argumento
         for i in range(num_args_sent):
             arg_expr_ctx = args_ctx_list[i]
-            arg_type = self.visit(arg_expr_ctx) # Visita la expresión del argumento
-            
+            arg_type = self.visit(arg_expr_ctx)
             expected_type = func_info.param_types[i]
-            
-            # Usar el cubo para checar compatibilidad (ej. asignar 'int' a 'float')
             check = self.cube[expected_type][arg_type].get('=')
-            if check == 'error' or not check:
+            if check == "error" or not check:
                 raise BabyDuckError("semantico", f"Error en el parámetro {args_ctx_list[i]}: la función esperaba un parámetro de tipo {expected_type} pero se recibió {arg_type}")
         
-        # 4. Devolver el tipo de retorno de la función
         return func_info.return_type
 
     def _generate_quad(self, operator, left_op, right_op, result):
@@ -300,3 +295,34 @@ class SemanticVisitor(BabyDuckVisitor):
             self.type_stack.append(result_type)
         
         return None
+
+    # 8. Punto neurálgico que se encarga de 2 operaciones importantes además de la generación de cuádruplos: 
+    #       - Manejar la precedencia de operadores entre paréntesis
+    #       - Validar y procesar elementos de la expresión
+    def visitFactor(self, ctx:BabyDuckParser.FactorContext):
+        # se encontró ("(") → <EXPRESION> → (")") → 
+        if ctx.expresion():
+            self.visit(ctx.expresion())
+            return None
+        
+        if ctx.dato_o_llamada():
+            self.visit(ctx.dato_o_llamada())
+            
+            # verificar si hay operador + o -
+            if ctx.MAS() or ctx.MENOS():
+                
+                tipo_dato = self.type_stack.pop()
+                op_dato = self.operand_stack.pop()
+                if tipo_dato not in ("entero", "flotante"):
+                    raise SemanticError(f"Error (Línea {ctx.start.line}): Operador unario (+ o -) no se puede aplicar a {tipo_dato}.")
+                
+                result_type = tipo_dato
+                # operadores unarios para una expresión negativa (no operación resta)
+                # se definió el operador unario suma solo para complementar al negativo
+                op_str = 'unary-' if ctx.MENOS() else 'unary+'
+                temp_var_name = self._new_temp(result_type)                
+                self._generate_quad(op_str, op_dato, None, temp_var_name)                
+                self.operand_stack.append(temp_var_name)
+                self.type_stack.append(result_type)
+            
+            return None
