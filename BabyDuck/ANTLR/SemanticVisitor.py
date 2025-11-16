@@ -314,12 +314,12 @@ class SemanticVisitor(BabyDuckVisitor):
                 tipo_dato = self.type_stack.pop()
                 op_dato = self.operand_stack.pop()
                 if tipo_dato not in ("entero", "flotante"):
-                    raise SemanticError(f"Error (Línea {ctx.start.line}): Operador unario (+ o -) no se puede aplicar a {tipo_dato}.")
+                    raise BabyDuckError(f"Error (Línea {ctx.start.line}): Operador unario (+ o -) no se puede aplicar a {tipo_dato}.")
                 
                 result_type = tipo_dato
                 # operadores unarios para una expresión negativa (no operación resta)
                 # se definió el operador unario suma solo para complementar al negativo
-                op_str = 'unary-' if ctx.MENOS() else 'unary+'
+                op_str = "unario-" if ctx.MENOS() else "unario+"
                 temp_var_name = self._new_temp(result_type)                
                 self._generate_quad(op_str, op_dato, None, temp_var_name)                
                 self.operand_stack.append(temp_var_name)
