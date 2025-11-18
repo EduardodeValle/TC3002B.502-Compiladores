@@ -135,7 +135,7 @@ class SemanticVisitor(BabyDuckVisitor):
         
         return None
 
-    # 2. Agregar variables al scope actual
+    # 2. Agregar variables al scope actual en <VARS>
     def visitDeclarar_variables(self, ctx:BabyDuckParser.Declarar_variablesContext):
         var_type = ctx.tipo().getText()
         
