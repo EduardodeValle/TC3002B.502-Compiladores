@@ -13,7 +13,10 @@ cuerpo: LLAVE_IZQUIERDA estatuto* LLAVE_DERECHA ;
 
 tipo: ENTERO | FLOTANTE ;
 
-estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO ;
+// esta regla no existe en el diagrama de sintaxis, yo la implemente
+devuelve: DEVOLVER exp? PUNTO_Y_COMA ;
+
+estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO | devuelve ;
 continuacion_de_estatuto_id: ASIGNACION expresion PUNTO_Y_COMA | PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO PUNTO_Y_COMA ;
 
 // La regla <ASIGNA> aparece en todas las reglas como una ambigüedad, por eso su lógica se implementó
@@ -54,6 +57,7 @@ cte: CTE_ENT | CTE_FLOT ;
 PROGRAMA: 'programa';
 INICIO: 'inicio';
 FIN: 'fin';
+DEVOLVER: 'devolver':
 VARS: 'vars';
 ENTERO: 'entero';
 FLOTANTE: 'flotante';
