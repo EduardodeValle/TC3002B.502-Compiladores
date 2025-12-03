@@ -1,25 +1,124 @@
-from collections import namedtuple
-
 from BabuDuckError import BabyDuckError
 from BabyDuckParser import BabyDuckParser
 from BabyDuckVisitor import BabyDuckVisitor
 
+from MemoryManager import MemoryManager
 from semantic_cube import semantic_cube
-from symbol import Symbol, FuncInfo, SymbolTableManager
 
 class SemanticVisitor(BabyDuckVisitor):
     def __init__(self):
-        self.cube = semantic_cube
-        self.table_manager = SymbolTableManager()        
-        self.current_func_info = None # funcion actual para conocer los parámetros
-
+        # --- ESTRUCTURAS DE DATOS (PILAS Y LISTAS) ---
         self.quadruples = []        
         self.operand_stack = [] 
         self.type_stack = []    
         self.operator_stack = []
         self.jump_stack = []
-        self.temp_counter = 1
         self.pending_jump = None
+        
+        self.cube = semantic_cube     
+        self.mem_manager = MemoryManager()
+        
+        # --- DIRECTORIO DE FUNCIONES (TABLA DE SÍMBOLOS) ---
+        # Inicializamos con el scope 'global' ya listo
+        self.dir_func = {
+            "global": {
+                "type": "void",      
+                "start_quad": 0,     
+                "vars_table": {},  
+                "param_signature": [],
+                "resources": {}     
+            }
+        }
+        
+        self.current_scope = "global"
+
+    # helper functions para el directorio de funciones y tabla de simbolos
+
+    def _create_function_entry(self, return_type, start_quad):
+        """
+        Crea el template vacío para una nueva función.
+        """
+        return {
+            "type": return_type,
+            "start_quad": start_quad,
+            "vars_table": {},
+            "param_signature": [], # Lista ordenada de tipos de parámetros (ej: ['int', 'float'])
+            "resources": {         # Cantidad de recursos que necesitará la VM
+                "local_int": 0, "local_float": 0, 
+                "temp_int": 0, "temp_float": 0, "temp_bool": 0
+            }
+        }
+
+    def _declare_function(self, func_name, return_type, start_quad):
+        """
+        Registra una nueva función y cambia el scope actual.
+        """
+        if func_name in self.dir_func:
+            raise BabyDuckError("semantico", f"La funcion '{func_name}' ya existe")
+            
+        # 1. Crear entrada
+        self.dir_func[func_name] = self._create_function_entry(return_type, start_quad)
+        
+        # 2. Cambiar el puntero de scope
+        self.current_scope = func_name
+        
+        # 3. Reiniciar contadores de memoria local y temporal (IMPORTANTE)
+        self.mem_manager.reset_local_memory()
+
+    def _end_function_logic(self):
+        """
+        Se llama cuando se termina de procesar una función.
+        Calcula los recursos usados basándose en los contadores del MemoryManager.
+        """
+        # Obtenemos los contadores actuales del MemoryManager
+        # Supongamos que tu MemoryManager tiene un método para ver el estado actual o accedes a counters
+        # Restamos el limite inferior para saber cuantos usamos (ej: si counter va en 3005 y base es 3000, usamos 5)
+        
+        used_resources = {
+            "local_int": self.mem_manager.counters['local_int'] - self.mem_manager.memory_map['local_int']['start'],
+            "local_float": self.mem_manager.counters['local_float'] - self.mem_manager.memory_map['local_float']['start'],
+            "temp_int": self.mem_manager.counters['temp_int'] - self.mem_manager.memory_map['temp_int']['start'],
+            "temp_float": self.mem_manager.counters['temp_float'] - self.mem_manager.memory_map['temp_float']['start'],
+            "temp_bool": self.mem_manager.counters['temp_bool'] - self.mem_manager.memory_map['temp_bool']['start'],
+        }
+
+        # Guardamos esto en el DirFunc de la función actual
+        self.dir_func[self.current_scope]["resources"] = used_resources
+        
+        # Insertar cuádruplo ENDFUNC
+        self.quadruples.append(("ENDFUNCTION", None, None, None))
+        
+        # Limpiar tabla de temporales si usas una aparte, y regresar scope a global si es necesario
+        # (Aunque típicamente en ANTLR simplemente sales del nodo y el scope cambia cuando entras a otra func)
+        self.current_scope = "global"
+
+    def _create_var_entry(self, var_type, virtual_address):
+        """
+        Crea el template para una variable (sea local o global).
+        """
+        return {
+            "type": var_type,
+            "direccion_virtual": virtual_address
+        }
+
+    def _declare_variable(self, var_name, var_type):
+        """
+        Registra una variable en el scope actual (Global o Función).
+        """
+        current_vars = self.dir_func[self.current_scope]["vars_table"]
+        
+        if var_name in current_vars:
+            raise BabyDuckError("semantico", f"La variable '{var_name}' ya fue declarada en el scope '{self.current_scope}'.")
+
+        # 1. Pedir dirección virtual al MemoryManager
+        scope_type = "global" if self.current_scope == "global" else "local"
+        virtual_addr = self.mem_manager.get_virtual_address(scope_type, var_type)
+        
+
+        # 2. Guardar en la tabla
+        current_vars[var_name] = self._create_var_entry(var_type, virtual_addr)
+
+    # Otros helper functions
 
     def _get_op_string(self, token_type):
 	    """ 
@@ -40,289 +139,3 @@ class SemanticVisitor(BabyDuckVisitor):
 		}
 
 	    return op_map.get(token_type)
-
-    def _validate_function_call(self, func_name, args_ctx_list, ctx_line):
-        """
-        Helper function, no es un punto neurálgico
-        Valida una llamada a función usada en 2 puntos neurálgicos: `visitDato_o_llamada` y `visitEstatuto`
-        1. Comprueba que la función exista.
-        2. Comprueba el número de argumentos (aridad).
-        3. Comprueba el tipo de cada argumento.
-        Devuelve el tipo de retorno de la función.
-        """
-        # 1. Buscar la función
-        func_info = self.table_manager.lookup_function(func_name)
-        if not func_info:
-            if self.table_manager.lookup_variable(func_name):
-                raise BabyDuckError("semantico", f"Uso incorrecto, '{func_name}' es una variable, no una función")
-            else:
-                raise BabyDuckError("semantico", f"Función '{func_name}' no declarada")
-        
-        # 2. Validar número de argumentos
-        num_args_sent = len(args_ctx_list) if args_ctx_list else 0
-        num_params_expected = len(func_info.param_types)
-        
-        if num_args_sent != num_params_expected:
-            raise BabyDuckError("semantico", f"La función '{func_name}' esperaba {num_params_expected} parámetros, pero recibió {num_args_sent}")
-            
-        # 3. Validar tipo de cada argumento
-        for i in range(num_args_sent):
-            arg_expr_ctx = args_ctx_list[i]
-            arg_type = self.visit(arg_expr_ctx)
-            expected_type = func_info.param_types[i]
-            check = self.cube[expected_type][arg_type].get('=')
-            if check == "error" or not check:
-                raise BabyDuckError("semantico", f"Error en el parámetro {args_ctx_list[i]}: la función esperaba un parámetro de tipo {expected_type} pero se recibió {arg_type}")
-        
-        return func_info.return_type
-
-    def _generate_quad(self, operator, left_op, right_op, result):
-        """
-        Helper function, no es un punto neurálgico
-        Crea un cuádruplo, lo agrega a la fila y devuelve su índice.
-        """
-        quad = Quadruple(operator, left_op, right_op, result)
-        self.quadruples.append(quad)
-        return len(self.quadruples) - 1
-
-    def _new_temp(self, temp_type):
-        """
-        Helper function, no es un punto neurálgico
-        Genera un nuevo nombre de temporal, la declara en la
-        tabla de símbolos actual y devuelve su nombre.
-        """
-            
-        temp_name = f"t{self.temp_counter}"
-        self.temp_counter += 1
-        success = self.table_manager.declare_variable(temp_name, temp_type)
-        return temp_name
-
-    def _get_current_index(self):
-        """ 
-        Helper function, no es un punto neurálgico
-        Devuelve el índice del siguiente cuádruplo a generar
-        """
-        return len(self.quadruples)
-
-    def _fill_jump(self, quad_index, jump_target_index):
-        """
-        Helper function, no es un punto neurálgico
-        Rellena un cuádruplo pendiente (GOTOs) con su destino
-        """
-        quad_to_fill = self.quadruples[quad_index]        
-        filled_quad = quad_to_fill._replace(result=jump_target_index)
-        self.quadruples[quad_index] = filled_quad
-
-    # ===========================================================================
-    # =============== Validar <PROGRAMA> y declaraciones globales ===============
-    # ===========================================================================
-
-    # 1. Inicializar el scope global en <PROGRAMA>
-    def visitPrograma(self, ctx:BabyDuckParser.ProgramaContext):
-        self.table_manager.start_program()
-        
-        # variables globales
-        if ctx.vars_():
-            self.visit(ctx.vars_())
-            
-        # declaracines de funciones
-        if ctx.funcs():
-            for func in ctx.funcs():
-                self.visit(func)
-        
-        # visitar el cuerpo principal: (inicio) → <CUERPO> → (fin)
-        self.visit(ctx.cuerpo())
-        
-        return None
-
-    # 2. Agregar variables al scope actual en <VARS>
-    def visitDeclarar_variables(self, ctx:BabyDuckParser.Declarar_variablesContext):
-        var_type = ctx.tipo().getText()
-        
-        # iterar sobre todos los IDs declarados
-        id_list_ctx = ctx.declarar_ids()
-        for id_terminal in id_list_ctx.ID():
-            var_name = id_terminal.getText()
-            
-            # validar que no sea una variable duplicada
-            success = self.table_manager.declare_variable(var_name, var_type)
-            
-            if not success:
-                raise BabyDuckError("semantico", f"Variable {var_name} ya fue declarada en este scope")
-
-        return None
-
-    # 3. Declarar una función en <FUNCS>
-    def visitFuncs(self, ctx:BabyDuckParser.FuncsContext):
-        """
-        Crea el scope de la función, lo agrega al directorio y cambia al nuevo scope
-        """
-
-        func_name = ctx.ID().getText()
-        return_type = "nula"
-        if ctx.tipo():
-            return_type = ctx.tipo().getText()
-        
-        # validar que la función no esté duplicada
-        success = self.table_manager.add_function(func_name, return_type)
-        if not success:
-            raise BabyDuckError("semantico", f"La función {func_name} ya fue declarada")
-            
-        # puntero a la FuncInfo actual para los parámetros
-        self.current_func_info = self.table_manager.lookup_function(func_name)
-        
-        if ctx.parametros():
-            self.visit(ctx.parametros())
-            
-        if ctx.vars_():
-            self.visit(ctx.vars_())
-            
-        self.visit(ctx.cuerpo())
-        
-        # restaurar al global, limpiar el puntero
-        self.table_manager.end_function()
-        self.current_func_info = None
-        return None
-
-    # 4. Visitar la regla <PARAMETROS> parte de <FUNCS>
-    def visitParametros(self, ctx:BabyDuckParser.ParametrosContext):
-        """
-        Agrega parámetros a la lista de la función y a su tabla de variables.
-        """
-        if not self.current_func_info:
-            raise BabyDuckError("semantico", "Error en directorio de funciones: no se encontró 'current_func_info' al visitar parámetros")
-        
-        for i in range(len(ctx.ID())):
-            param_name = ctx.ID(i).getText()
-            param_type = ctx.tipo(i).getText()
-            
-            self.current_func_info.add_param(param_type)
-            
-            # declarar como variable en el scope local
-            success = self.table_manager.declare_variable(param_name, param_type)
-            if not success:
-                raise BabyDuckError("semantico", f"Parámetro {param_name} ya está declarado en el scope actual")
-
-        return None
-
-    # ===========================================================================
-    # ============== Validar el resultado de todas las expresiones ==============
-    # ===========================================================================
-
-    # 5. Validar operaciones * y / en <TERMINO> y generar sus cuádruplos
-    def visitTermino(self, ctx:BabyDuckParser.TerminoContext):
-        self.visit(ctx.factor(0))
-        
-        # iterar sobre el resto de factores
-        for i in range(1, len(ctx.factor())):
-            # visitar el siguiente factor
-            self.visit(ctx.factor(i))
-
-            tipo_der = self.type_stack.pop()
-            op_der = self.operand_stack.pop()
-            tipo_izq = self.type_stack.pop()
-            op_izq = self.operand_stack.pop()
-            op_token = ctx.getChild((i*2)-1).getSymbol() # obtener el operador
-            op_str = self._get_op_string(op_token.type)
-            
-            # validar semántica en cada iteración
-            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
-            if result_type == "error" or not result_type:
-                raise BabyDuckError("semantico", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
-            
-            # generar cuádruplo
-            temp_var_name = self._new_temp(result_type)
-            self._generate_quad(op_str, op_izq, op_der, temp_var_name)
-            self.operand_stack.append(temp_var_name)
-            self.type_stack.append(result_type)
-            
-        # el resultado de todo el termino queda en el tope de la pila
-        return None 
-
-    # 6. Validar operaciones + y - en <EXP> y generar sus cuádruplos
-    def visitExp(self, ctx:BabyDuckParser.ExpContext):
-        self.visit(ctx.termino(0))
-        
-        # iterar sobre el resto de factores
-        for i in range(1, len(ctx.termino())):
-            # visitar el siguiente factor
-            self.visit(ctx.termino(i))
-            
-            tipo_der = self.type_stack.pop()
-            op_der = self.operand_stack.pop()
-            tipo_izq = self.type_stack.pop()
-            op_izq = self.operand_stack.pop()
-            op_token = ctx.getChild((i*2)-1).getSymbol() # obtener el operador
-            op_str = self._get_op_string(op_token.type)
-            
-            # validar semántica en cada iteración
-            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
-            if result_type == "error" or not result_type:
-                raise BabyDuckError("semantico", f"No se permite la operación {tipo_izq} {op_str} {tipo_der}")
-            
-            
-            # generar cuádruplo
-            temp_var_name = self._new_temp(result_type)
-            self._generate_quad(op_str, op_izq, op_der, temp_var_name)            
-            self.operand_stack.append(temp_var_name)
-            self.type_stack.append(result_type)
-            
-        return None
-
-    # 7. Validar expresiones relacionales >, <, !=, == y generar sus cuádruplos
-    def visitExpresion(self, ctx:BabyDuckParser.ExpresionContext):
-        self.visit(ctx.exp(0))
-        
-        # verificar si hay una operación relacional, si no hay ninguna no se
-        # hace nada, el resultado es la misma <EXP> 1 del stack
-        if ctx.exp(1):
-            self.visit(ctx.exp(1))
-            
-            tipo_der = self.type_stack.pop()
-            op_der = self.operand_stack.pop()
-            tipo_izq = self.type_stack.pop()
-            op_izq = self.operand_stack.pop()
-            op_token = ctx.getChild(1).getSymbol() # obtener el operador
-            op_str = self._get_op_string(op_token.type)
-            
-            result_type = self.cube[tipo_izq][tipo_der].get(op_str)
-            if result_type == "error" or not result_type:
-                raise BabyDuckError("semantico", f"No se permite la comparación {tipo_izq} {op_str} {tipo_der}")
-            
-            temp_var_name = self._new_temp(result_type)
-            self._generate_quad(op_str, op_izq, op_der, temp_var_name)
-            self.operand_stack.append(temp_var_name)
-            self.type_stack.append(result_type)
-        
-        return None
-
-    # 8. Punto neurálgico que se encarga de 2 operaciones importantes además de la generación de cuádruplos: 
-    #       - Manejar la precedencia de operadores entre paréntesis
-    #       - Validar y procesar elementos de la expresión
-    def visitFactor(self, ctx:BabyDuckParser.FactorContext):
-        # se encontró ("(") → <EXPRESION> → (")") → 
-        if ctx.expresion():
-            self.visit(ctx.expresion())
-            return None
-        
-        if ctx.dato_o_llamada():
-            self.visit(ctx.dato_o_llamada())
-            
-            # verificar si hay operador + o -
-            if ctx.MAS() or ctx.MENOS():
-                
-                tipo_dato = self.type_stack.pop()
-                op_dato = self.operand_stack.pop()
-                if tipo_dato not in ("entero", "flotante"):
-                    raise BabyDuckError(f"Error (Línea {ctx.start.line}): Operador unario (+ o -) no se puede aplicar a {tipo_dato}.")
-                
-                result_type = tipo_dato
-                # operadores unarios para una expresión negativa (no operación resta)
-                # se definió el operador unario suma solo para complementar al negativo
-                op_str = "unario-" if ctx.MENOS() else "unario+"
-                temp_var_name = self._new_temp(result_type)                
-                self._generate_quad(op_str, op_dato, None, temp_var_name)                
-                self.operand_stack.append(temp_var_name)
-                self.type_stack.append(result_type)
-            
-            return None

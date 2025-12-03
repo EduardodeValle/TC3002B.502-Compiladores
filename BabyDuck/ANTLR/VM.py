@@ -1,13 +1,10 @@
-import sys
+from BabyDuckError import BabyDuckError
 
 # configuracion de los rangos de memoria
 GLOBAL_RANGES = range(1000, 3000)   # rangos para enteros y flotantes
 LOCAL_RANGES  = range(3000, 5000)   # rangos para enteros y flotantes
 TEMP_RANGES   = range(5000, 8000)   # rangos para enteros, flotantes y booleanos
-CONST_RANGES  = range(8000, 10000)  # rangos para enteros y flotantes
-
-# limite de llamadas recursivas simultaneas
-MAX_STACK_SIZE = 1000 
+CONST_RANGES  = range(8000, 11000)  # rangos para enteros, flotantes y strings
 
 class MemoryMap:
     """
@@ -25,17 +22,15 @@ class MemoryMap:
         return self.data[address]
 
     def set(self, address, value):
+        """
+        Asigna un valor a una direccion virtual
+        """
         self.data[address] = value
-
-    def __repr__(self):
-        return f"<{self.name} Mem | Size: {len(self.data)}>"
 
 class VirtualMachine:
     def __init__(self, quadruples, constants_map, dir_func):
         """
-        :param quadruples: Lista de tuplas (op, left, right, res)
-        :param constants_map: Diccionario { addr: val }
-        :param dir_func: Directorio de funciones (necesario para ERA)
+        Maquina virtual que ejecuta cuadruplos en tiempo de ejecucion
         """
         self.quadruples = quadruples
         self.dir_func = dir_func
@@ -47,6 +42,8 @@ class VirtualMachine:
         
         # Stack de ejecución (Lista de MemoryMaps)
         # Inicializamos con el scope 'global' o 'main'
+        # limite de llamadas recursivas simultaneas
+        self.MAX_STACK_SIZE = 1000 
         self.call_stack = [MemoryMap("Main_Scope")] 
         
         # Pila de saltos para retornos (GOSUB)
@@ -62,36 +59,40 @@ class VirtualMachine:
         for addr, val in constants_map.items():
             self.mem_const.set(addr, val)
 
+    def _is_int_address(self, addr):
+        """
+        Devuelve True si la direccion pertenece a un segmento de enteros:
+        global, local, temporal o constante
+        """
+        
+        return (1000 <= addr < 2000 or 
+                3000 <= addr < 4000 or 
+                5000 <= addr < 6000 or 
+                8000 <= addr < 9000)
+
     def get_value(self, address):
         """
-        Rutea la dirección y valida inicialización.
+        Busca la direccion y valida inicialización
         """
         val = None
         scope_name = ""
 
-        # 1. Constantes
+
         if address in CONST_RANGES:
             val = self.mem_const.get(address)
             scope_name = "Constant"
-        
-        # 2. Globales
         elif address in GLOBAL_RANGES:
             val = self.mem_global.get(address)
             scope_name = "Global"
         
-        # 3. Locales y Temporales (Stack Actual)
+        # buscar direccion en locales y temporales del scope actual
         elif (address in LOCAL_RANGES) or (address in TEMP_RANGES):
-            if not self.call_stack:
-                raise RuntimeError("Stack Underflow: Intento de acceso sin Stack Frame.")
             val = self.call_stack[-1].get(address)
             scope_name = "Local/Temp"
-        
-        else:
-            raise RuntimeError(f"Segmentation Fault: Dirección {address} inválida.")
 
-        # --- VALIDACIÓN: VARIABLE NO INICIALIZADA ---
+        # variable no inicializada
         if val is None:
-            raise RuntimeError(f"Error de Ejecución: Uso de variable no inicializada en dirección {address} ({scope_name}).")
+            raise BabyDuckError("vm", f"Error de Ejecucion: Uso de variable no inicializada en dirección {address} ({scope_name})")
         
         return val
 
@@ -103,190 +104,170 @@ class VirtualMachine:
             self.mem_global.set(address, value)
             
         elif (address in LOCAL_RANGES) or (address in TEMP_RANGES):
-            if not self.call_stack:
-                raise RuntimeError("Stack Underflow: No hay memoria local activa.")
             self.call_stack[-1].set(address, value)
-            
-        elif address in CONST_RANGES:
-            raise RuntimeError("Error de Ejecución: Intento de escritura en Constante.")
-        else:
-            raise RuntimeError(f"Segmentation Fault: Dirección escritura {address} inválida.")
 
     def execute(self):
         print(">>> INICIANDO MÁQUINA VIRTUAL <<<")
         total_quads = len(self.quadruples)
 
-        try:
-            while self.ip < total_quads:
-                op_code, left, right, res = self.quadruples[self.ip]
+        
+        while self.ip < total_quads:
+            op_code, left, right, res = self.quadruples[self.ip]
 
-                match op_code:
-                    # ==================================
-                    #       ARITMÉTICA BÁSICA
-                    # ==================================
-                    case '+':
-                        l_val = self.get_value(left)
-                        r_val = self.get_value(right)
-                        self.set_value(res, l_val + r_val)
+            match op_code:
+                # ==================================
+                #       ARITMÉTICA BÁSICA
+                # ==================================
+                case '+':
+                    l_val = self.get_value(left)
+                    r_val = self.get_value(right)
+                    self.set_value(res, l_val + r_val)
 
-                    case '-':
-                        l_val = self.get_value(left)
-                        r_val = self.get_value(right)
-                        self.set_value(res, l_val - r_val)
+                case '-':
+                    l_val = self.get_value(left)
+                    r_val = self.get_value(right)
+                    self.set_value(res, l_val - r_val)
 
-                    case '*':
-                        l_val = self.get_value(left)
-                        r_val = self.get_value(right)
-                        self.set_value(res, l_val * r_val)
+                case '*':
+                    l_val = self.get_value(left)
+                    r_val = self.get_value(right)
+                    self.set_value(res, l_val * r_val)
 
-                    case '/':
-                        l_val = self.get_value(left)
-                        r_val = self.get_value(right)
-                        # --- VALIDACIÓN: DIVISIÓN ENTRE CERO ---
-                        if r_val == 0:
-                            raise ZeroDivisionError("División entre cero detectada.")
-                        # Si manejas enteros y floats, Python se encarga del tipo resultante
-                        # Si tu lenguaje es estricto con enteros, usa // para ints
+                case '/':
+                    l_val = self.get_value(left)
+                    r_val = self.get_value(right)
+                    # validar division entre 0
+                    if r_val == 0:
+                        raise BabyDuckError("vm", "Error de ejecucion: Division entre cero detectada")
+
+                    # para enteros la division es int(l_val // r_val)
+                    # para flotantes la division es simplemente l_val / r_val
+                    if self._is_int_address(res):
+                        self.set_value(res, int(l_val // r_val))
+                    else:
                         self.set_value(res, l_val / r_val)
 
-                    # ==================================
-                    #       LÓGICA / COMPARACIÓN
-                    # ==================================
-                    case '>':
-                        self.set_value(res, self.get_value(left) > self.get_value(right))
-                    case '<':
-                        self.set_value(res, self.get_value(left) < self.get_value(right))
-                    case '==':
-                        self.set_value(res, self.get_value(left) == self.get_value(right))
-                    case '!=':
-                        self.set_value(res, self.get_value(left) != self.get_value(right))
+                # ==================================
+                #       LÓGICA / COMPARACIÓN
+                # ==================================
+                case '>':
+                    self.set_value(res, self.get_value(left) > self.get_value(right))
+                case '<':
+                    self.set_value(res, self.get_value(left) < self.get_value(right))
+                case '==':
+                    self.set_value(res, self.get_value(left) == self.get_value(right))
+                case '!=':
+                    self.set_value(res, self.get_value(left) != self.get_value(right))
 
-                    # ==================================
-                    #       ASIGNACIÓN
-                    # ==================================
-                    case '=':
-                        val = self.get_value(left)
-                        self.set_value(res, val)
-                    
-                    case 'unario+':
-                        val = self.get_value(left)
-                        self.set_value(res, +val)
+                # ==================================
+                #       ASIGNACIÓN
+                # ==================================
+                case '=':
+                    val = self.get_value(left)
+                    self.set_value(res, val)
+                
+                case 'unario+':
+                    val = self.get_value(left)
+                    self.set_value(res, +val)
 
-                    case 'unario-':
-                        val = self.get_value(left)
-                        self.set_value(res, -val)
+                case 'unario-':
+                    val = self.get_value(left)
+                    self.set_value(res, -val)
 
-                    # ==================================
-                    #       ENTRADA / SALIDA
-                    # ==================================
-                    case 'PRINT':
-                        # Imprimir el valor (res contiene la dirección a imprimir)
-                        # Nota: En algunos diseños el dato está en 'res', en otros en 'left'.
-                        # Ajusta según tu generador de cuádruplos. Asumiré que está en 'res'.
-                        val_to_print = self.get_value(res) 
-                        print(f"> {val_to_print}")
+                # ==================================
+                #       ENTRADA / SALIDA
+                # ==================================
+                case 'PRINT':
+                    # Imprimir el valor (res contiene la dirección a imprimir)
+                    # Nota: En algunos diseños el dato está en 'res', en otros en 'left'.
+                    # Ajusta según tu generador de cuádruplos. Asumiré que está en 'res'.
+                    val_to_print = self.get_value(res) 
+                    print(f"> {val_to_print}")
 
-                    # ==================================
-                    #       CONTROL DE FLUJO
-                    # ==================================
-                    case 'GOTO':
+                # ==================================
+                #       CONTROL DE FLUJO
+                # ==================================
+                case 'GOTO':
+                    self.ip = res
+                    continue # no incrementar el ip, moverlo en su lugar
+
+                case 'GOTOF':
+                    condition = self.get_value(left)
+                    if not condition: # Si es Falso
                         self.ip = res
-                        continue # Evita el ip += 1 del final
-
-                    case 'GOTOF':
-                        condition = self.get_value(left)
-                        if not condition: # Si es Falso
-                            self.ip = res
-                            continue
-
-                    # ==================================
-                    #       FUNCIONES (ERA / GOSUB)
-                    # ==================================
-                    case 'ERA':
-                        func_name = left
-                        # Verificar si existe en directorio
-                        if func_name not in self.dir_func:
-                            raise RuntimeError(f"Función '{func_name}' no encontrada en directorio.")
-                        
-                        # Instanciar nuevo mapa de memoria pero NO hacer push todavía
-                        self.mem_pending = MemoryMap(f"Scope_{func_name}")
-
-                    case 'PARAMETER':
-                        # left: dirección origen (scope actual)
-                        # res: dirección destino (parametro en scope pendiente)
-                        if self.mem_pending is None:
-                            raise RuntimeError("Instrucción PARAMETER sin ERA previo.")
-                        
-                        val = self.get_value(left)
-                        # Escribimos directo en el mapa pendiente
-                        self.mem_pending.set(res, val)
-
-                    case 'GOSUB':
-                        func_start_addr = res
-                        
-                        # --- VALIDACIÓN: STACK OVERFLOW ---
-                        if len(self.call_stack) >= MAX_STACK_SIZE:
-                            raise RuntimeError(f"STACK OVERFLOW: Se excedió el límite de {MAX_STACK_SIZE} llamadas recursivas.")
-
-                        # Guardar dirección de retorno
-                        self.jump_stack.append(self.ip + 1)
-                        
-                        # Activar el nuevo contexto
-                        if self.mem_pending:
-                            self.call_stack.append(self.mem_pending)
-                            self.mem_pending = None
-                        else:
-                            # Caso borde: funcion sin params podría no haber tenido ERA (depende de tu compilador)
-                            # Creamos un scope vacío por seguridad
-                            self.call_stack.append(MemoryMap("Scope_Void"))
-
-                        self.ip = func_start_addr
                         continue
 
-                    case 'ENDFUNCTION':
-                        # Liberar memoria local
-                        self.call_stack.pop()
-                        # Regresar instrucción
-                        self.ip = self.jump_stack.pop()
-                        continue
+                # ==================================
+                #       FUNCIONES (ERA / GOSUB)
+                # ==================================
+                case 'ERA':
+                    func_name = left
+                    
+                    # Instanciar nuevo mapa de memoria pero NO hacer push todavía
+                    self.mem_pending = MemoryMap(f"Scope_{func_name}")
 
-                    case 'RETURN':
-                        # left: valor a retornar
-                        # res: dirección donde guardar el retorno (usualmente una Global o Temp del Caller)
-                        ret_val = self.get_value(left)
-                        
-                        # Lógica de asignación del retorno:
-                        # Si res es Global, escribimos directo.
-                        if res in GLOBAL_RANGES:
-                            self.mem_global.set(res, ret_val)
-                        else:
-                            # Si res es Temp, debe pertenecer al CALLER (el scope anterior en el stack)
-                            # Necesitamos escribir en stack[-2] porque stack[-1] está a punto de morir.
-                            if len(self.call_stack) > 1:
-                                self.call_stack[-2].set(res, ret_val)
-                            else:
-                                raise RuntimeError("RETURN fuera de contexto de función.")
+                case 'PARAMETER':
+                    # left: dirección origen (scope actual)
+                    # res: dirección destino (parametro en scope pendiente)
+                    
+                    val = self.get_value(left)
+                    # Escribimos directo en el mapa pendiente
+                    self.mem_pending.set(res, val)
 
-                        # El RETURN actúa también como fin de función
-                        self.call_stack.pop()
-                        self.ip = self.jump_stack.pop()
-                        continue
+                case 'GOSUB':
+                    func_start_addr = res
+                    
+                    if len(self.call_stack) >= self.MAX_STACK_SIZE:
+                        raise BabyDuckError("vm", f"Stack Overflow: Se excedió el límite de {MAX_STACK_SIZE} llamadas recursivas")
 
-                    # ==================================
-                    #       FIN DEL PROGRAMA
-                    # ==================================
-                    case 'END':
-                        print("\n>>> EJECUCIÓN FINALIZADA CON ÉXITO <<<")
-                        sys.exit(0)
+                    # Guardar dirección de retorno
+                    self.jump_stack.append(self.ip + 1)
+                    
+                    # Activar el nuevo contexto
+                    if self.mem_pending:
+                        self.call_stack.append(self.mem_pending)
+                        self.mem_pending = None
+                    else:
+                        # Caso borde: funcion sin params podría no haber tenido ERA (depende de tu compilador)
+                        # Creamos un scope vacío por seguridad
+                        self.call_stack.append(MemoryMap("Scope_Void"))
 
-                    case _:
-                        raise RuntimeError(f"OpCode desconocido: {op_code}")
+                    self.ip = func_start_addr
+                    continue
 
-                # Incrementar IP si no hubo saltos
-                self.ip += 1
+                case 'ENDFUNCTION':
+                    self.call_stack.pop()
+                    self.ip = self.jump_stack.pop()
+                    continue
 
-        except Exception as e:
-            print(f"\n!!! ERROR DE EJECUCIÓN !!!")
-            print(f"Instrucción fallida en Cuádruplo #{self.ip}: {self.quadruples[self.ip]}")
-            print(f"Causa: {e}")
-            sys.exit(1)
+                case 'RETURN':
+                    # left: valor a retornar
+                    # res: dirección donde guardar el retorno (usualmente una Global o Temp del Caller)
+                    ret_val = self.get_value(left)
+                    
+                    # Lógica de asignación del retorno:
+                    # Si res es Global, escribimos directo.
+                    if res in GLOBAL_RANGES:
+                        self.mem_global.set(res, ret_val)
+                    else:
+                        # Si res es Temp, debe pertenecer al CALLER (el scope anterior en el stack)
+                        # Necesitamos escribir en stack[-2] porque stack[-1] está a punto de morir.
+                        self.call_stack[-2].set(res, ret_val)
+
+                    # El RETURN actúa también como fin de función
+                    self.call_stack.pop()
+                    self.ip = self.jump_stack.pop()
+                    continue
+
+                # ==================================
+                #       FIN DEL PROGRAMA
+                # ==================================
+                case 'END':
+                    print("\n>>> EJECUCIÓN FINALIZADA CON ÉXITO <<<")
+                    return # regresar a compiler.py
+
+                case _:
+                    raise BabyDuckError("vm", f"OpCode desconocido: {op_code}")
+
+            # Incrementar IP si no hubo saltos
+            self.ip += 1

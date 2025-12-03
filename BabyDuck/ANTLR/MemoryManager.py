@@ -14,6 +14,7 @@ class MemoryManager:
             "temp_bool":    {"start": 7000, "end": 7999}, # solo existen como temporales no como variables
             "const_int":    {"start": 8000, "end": 8999},
             "const_float":  {"start": 9000, "end": 9999},
+            "const_string": {"start": 10000, "end": 10999} # solo existe en el token letrero
         }
 
         # inicializar contadores en el valor de inicio de cada rango

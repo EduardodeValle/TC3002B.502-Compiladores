@@ -1,14 +1,6 @@
-# semantic_cube[tipo_izquierdo][tipo_derecho][operador] → devuelve el tipo de dato de la expresión
-
-# Los strings no existen como un tipo de dato explicito, solo adentro de las regla 
-# <ESCRIBE> para imprimir datos, no se incluye en el cubo semantico
-
-# No hay un tipo de dato explicito para booleano, pero se usa en resultados de expresiones lógicas
-
-# De acuerdo al diagrama de sintaxis no existen los operadores AND, OR, NOT
-
-# ok → resultado semantico valido
-# error → resultado semantico invalido
+# ok    → operacion valida
+# error → operacion invalida
+# diferente de error y de ok → tipo de resultado de la operacion
 
 semantic_cube = {
     "entero": {
