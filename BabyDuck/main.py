@@ -1,5 +1,5 @@
 import sys
-from BabyDuckError import BabyDuckError 
+from ANTLR.BabyDuckError import BabyDuckError 
 from ANTLR.compiler import run_compiler
 
 def main():
