@@ -5,15 +5,15 @@ class MemoryManager:
         # globales y constantes nunca se reinician
         # locales y temporales se reinician por funcion
         self.memory_map = {
-            "global_int":   {"start": 1000, "end": 1999},
-            "global_float": {"start": 2000, "end": 2999},
-            "local_int":    {"start": 3000, "end": 3999},
-            "local_float":  {"start": 4000, "end": 4999},
-            "temp_int":     {"start": 5000, "end": 5999},
-            "temp_float":   {"start": 6000, "end": 6999},
-            "temp_bool":    {"start": 7000, "end": 7999}, # solo existen como temporales no como variables
-            "const_int":    {"start": 8000, "end": 8999},
-            "const_float":  {"start": 9000, "end": 9999},
+            "global_entero":   {"start": 1000, "end": 1999},
+            "global_flotante": {"start": 2000, "end": 2999},
+            "local_entero":    {"start": 3000, "end": 3999},
+            "local_flotante":  {"start": 4000, "end": 4999},
+            "temp_entero":     {"start": 5000, "end": 5999},
+            "temp_flotante":   {"start": 6000, "end": 6999},
+            "temp_booleano":    {"start": 7000, "end": 7999}, # solo existen como temporales no como variables
+            "const_entero":    {"start": 8000, "end": 8999},
+            "const_flotante":  {"start": 9000, "end": 9999},
             "const_string": {"start": 10000, "end": 10999} # solo existe en el token letrero
         }
 
@@ -59,7 +59,7 @@ class MemoryManager:
         cada vez que se cambia de scope
         """
         print("--- Reiniciando memoria Local y Temporal para nueva función ---")
-        reset_keys = ['local_int', 'local_float', 'temp_int', 'temp_float', 'temp_bool']
+        reset_keys = ['local_entero', 'local_flotante', 'temp_entero', 'temp_flotante', 'temp_booleano']
         
         for key in reset_keys:
             self.counters[key] = self.memory_map[key]['start']

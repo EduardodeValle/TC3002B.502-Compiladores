@@ -89,10 +89,6 @@ class VirtualMachine:
         elif (address in LOCAL_RANGES) or (address in TEMP_RANGES):
             val = self.call_stack[-1].get(address)
             scope_name = "Local/Temp"
-
-        # variable no inicializada
-        if val is None:
-            raise BabyDuckError("vm", f"Error de Ejecucion: Uso de variable no inicializada en dirección {address} ({scope_name})")
         
         return val
 

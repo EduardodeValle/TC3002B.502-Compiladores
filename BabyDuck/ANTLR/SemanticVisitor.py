@@ -17,6 +17,7 @@ class SemanticVisitor(BabyDuckVisitor):
         
         self.cube = semantic_cube     
         self.mem_manager = MemoryManager()
+        self.constant_table = {}
         
         # --- DIRECTORIO DE FUNCIONES (TABLA DE SÍMBOLOS) ---
         # Inicializamos con el scope 'global' ya listo
@@ -44,8 +45,11 @@ class SemanticVisitor(BabyDuckVisitor):
             "vars_table": {},
             "param_signature": [], # Lista ordenada de tipos de parámetros (ej: ['int', 'float'])
             "resources": {         # Cantidad de recursos que necesitará la VM
-                "local_int": 0, "local_float": 0, 
-                "temp_int": 0, "temp_float": 0, "temp_bool": 0
+                "local_entero": 0, 
+                "local_flotante": 0, 
+                "temp_entero": 0, 
+                "temp_flotante": 0, 
+                "temp_booleanoeanoeano": 0
             }
         }
 
@@ -75,11 +79,11 @@ class SemanticVisitor(BabyDuckVisitor):
         # Restamos el limite inferior para saber cuantos usamos (ej: si counter va en 3005 y base es 3000, usamos 5)
         
         used_resources = {
-            "local_int": self.mem_manager.counters['local_int'] - self.mem_manager.memory_map['local_int']['start'],
-            "local_float": self.mem_manager.counters['local_float'] - self.mem_manager.memory_map['local_float']['start'],
-            "temp_int": self.mem_manager.counters['temp_int'] - self.mem_manager.memory_map['temp_int']['start'],
-            "temp_float": self.mem_manager.counters['temp_float'] - self.mem_manager.memory_map['temp_float']['start'],
-            "temp_bool": self.mem_manager.counters['temp_bool'] - self.mem_manager.memory_map['temp_bool']['start'],
+            "local_entero": self.mem_manager.counters['local_entero'] - self.mem_manager.memory_map['local_entero']['start'],
+            "local_flotante": self.mem_manager.counters['local_flotante'] - self.mem_manager.memory_map['local_flotante']['start'],
+            "temp_entero": self.mem_manager.counters['temp_entero'] - self.mem_manager.memory_map['temp_entero']['start'],
+            "temp_flotante": self.mem_manager.counters['temp_flotante'] - self.mem_manager.memory_map['temp_flotante']['start'],
+            "temp_booleanoeano": self.mem_manager.counters['temp_booleanoeano'] - self.mem_manager.memory_map['temp_booleanoeano']['start'],
         }
 
         # Guardamos esto en el DirFunc de la función actual
