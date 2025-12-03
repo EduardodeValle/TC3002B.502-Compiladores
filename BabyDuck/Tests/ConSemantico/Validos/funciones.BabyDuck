@@ -1,0 +1,20 @@
+programa test3;
+vars
+    global : entero;
+
+void imprimirDoble(val: entero) {
+    vars 
+        temp : entero;
+    {
+        temp = val * 2;
+        escribe(temp);
+    }
+};
+
+inicio
+    {
+        global = 5;
+        imprimirDoble(global);
+        escribe("Regrese a main");
+    }
+fin

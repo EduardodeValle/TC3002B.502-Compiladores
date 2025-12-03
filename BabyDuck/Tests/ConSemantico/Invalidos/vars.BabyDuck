@@ -1,0 +1,10 @@
+programa error1;
+vars
+    a : entero;
+inicio
+    {
+        escribe("b es una variable no declarada");
+	a = 10;
+        b = 20;  
+    }
+fin
