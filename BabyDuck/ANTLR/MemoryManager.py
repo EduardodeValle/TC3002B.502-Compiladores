@@ -1,34 +1,22 @@
 from BabuDuckError import BabyDuckError
 
-class MemoryError(Exception):
-    """Excepción personalizada para cuando se agota la memoria virtual."""
-    pass
-
 class MemoryManager:
     def __init__(self):
-        # Configuración de los rangos de memoria (PARAMETRIZABLE)
-        # Formato: [Inicio, Limite_Superior (exclusivo)]
-        # Puedes modificar estos números para aumentar/disminuir el rango
+        # globales y constantes nunca se reinician
+        # locales y temporales se reinician por funcion
         self.memory_map = {
-            # --- GLOBAL (No se reinicia) ---
-            'global_int':   {'start': 1000, 'end': 1999},
-            'global_float': {'start': 2000, 'end': 2999},
-            
-            # --- LOCAL (Se reinicia por función) ---
-            'local_int':    {'start': 3000, 'end': 3999},
-            'local_float':  {'start': 4000, 'end': 4999},
-            
-            # --- TEMPORAL (Se reinicia por función) ---
-            'temp_int':     {'start': 5000, 'end': 5999},
-            'temp_float':   {'start': 6000, 'end': 6999},
-            'temp_bool':    {'start': 7000, 'end': 7999}, # Solo existen como temporales
-            
-            # --- CONSTANTES (No se reinicia) ---
-            'const_int':    {'start': 8000, 'end': 8999},
-            'const_float':  {'start': 9000, 'end': 9999}
+            "global_int":   {"start": 1000, "end": 1999},
+            "global_float": {"start": 2000, "end": 2999},
+            "local_int":    {"start": 3000, "end": 3999},
+            "local_float":  {"start": 4000, "end": 4999},
+            "temp_int":     {"start": 5000, "end": 5999},
+            "temp_float":   {"start": 6000, "end": 6999},
+            "temp_bool":    {"start": 7000, "end": 7999}, # solo existen como temporales no como variables
+            "const_int":    {"start": 8000, "end": 8999},
+            "const_float":  {"start": 9000, "end": 9999},
         }
 
-        # Inicializar contadores en el valor de inicio de cada rango
+        # inicializar contadores en el valor de inicio de cada rango
         self.counters = {key: val['start'] for key, val in self.memory_map.items()}
 
     def _print_memory_status(self):
@@ -51,16 +39,15 @@ class MemoryManager:
         mem_key = f"{scope}_{var_type}"
 
         if mem_key not in self.counters:
-            raise BabyDuckError("direcciones virtuales", f"Error: se intento asignar una direccion invalida: {mem_key}")
+            raise BabyDuckError("direcciones virtuales", f"Error: se intento asignar una direccion para {var_type} en {scope}")
 
         # obtener dirección actual y limites
         current_addr = self.counters[mem_key]
         limit = self.memory_map[mem_key]['end']
 
         if current_addr >= limit:
-            raise BabyDuckError("direcciones virtuales", f"Se agoto el rango de direcciones virtuales en el scope {scope} para {mem_key}")
+            raise BabyDuckError("direcciones virtuales", f"Se agoto el rango de direcciones virtuales en el scope {scope} para {var_type}")
 
-        # actualizar el contador para la siguiente variable
         self.counters[mem_key] += 1
 
         return current_addr

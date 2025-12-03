@@ -57,7 +57,7 @@ cte: CTE_ENT | CTE_FLOT ;
 PROGRAMA: 'programa';
 INICIO: 'inicio';
 FIN: 'fin';
-DEVOLVER: 'devolver':
+DEVOLVER: 'devolver';
 VARS: 'vars';
 ENTERO: 'entero';
 FLOTANTE: 'flotante';
