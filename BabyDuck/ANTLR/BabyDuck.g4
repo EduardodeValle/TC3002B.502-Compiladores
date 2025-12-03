@@ -1,4 +1,5 @@
 grammar BabyDuck;
+options { listener=false; }
 
 programa: PROGRAMA ID PUNTO_Y_COMA vars? funcs* INICIO cuerpo FIN ;
 

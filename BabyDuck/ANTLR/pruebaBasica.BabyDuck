@@ -1,0 +1,14 @@
+programa test1;
+vars
+    a, b : entero;
+    c : flotante;
+inicio
+    {
+        a = 10;
+        b = 20;
+        c = 3.14;
+        escribe("Hola Mundo");
+        escribe(a + b * 2); 
+        escribe(c);
+    }
+fin
