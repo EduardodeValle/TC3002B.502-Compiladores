@@ -1,28 +1,27 @@
 import sys
 
-# configuracion de memoria que debe coincidir con la clase MemoryManager
-GLOBAL_RANGES = range(1000, 3000)   # enteros y flotantes
-LOCAL_RANGES  = range(3000, 5000)   # enteros y flotantes
-TEMP_RANGES   = range(5000, 8000)   # enteros, flotantes y booleanos
-CONST_RANGES  = range(8000, 10000)  # enteros y flotantes
+# configuracion de los rangos de memoria
+GLOBAL_RANGES = range(1000, 3000)   # rangos para enteros y flotantes
+LOCAL_RANGES  = range(3000, 5000)   # rangos para enteros y flotantes
+TEMP_RANGES   = range(5000, 8000)   # rangos para enteros, flotantes y booleanos
+CONST_RANGES  = range(8000, 10000)  # rangos para enteros y flotantes
+
+# limite de llamadas recursivas simultaneas
+MAX_STACK_SIZE = 1000 
 
 class MemoryMap:
     """
-    Representa un segmento de memoria (Scope).
-    Usa un diccionario para guardar solo lo necesario.
+    Un segmento de memoria por scope global o local
     """
     def __init__(self, name):
         self.name = name
-        self.data = {} # { direccion_virtual: valor }
+        self.data = {}
 
     def get(self, address):
         """
-        Retorna el valor. Si la llave no existe, significa que
-        la variable fue declarada pero NO inicializada.
+        Retorna el valor de la direccion virtual
         """
-        if address not in self.data:
-            # RETORNO ESPECIAL para indicar "No Inicializado"
-            return None 
+
         return self.data[address]
 
     def set(self, address, value):
