@@ -1,4 +1,4 @@
-from BabuDuckError import BabyDuckError
+from BabyDuckError import BabyDuckError
 
 class MemoryManager:
     def __init__(self):

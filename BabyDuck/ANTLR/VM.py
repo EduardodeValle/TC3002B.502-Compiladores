@@ -214,7 +214,7 @@ class VirtualMachine:
                     func_start_addr = res
                     
                     if len(self.call_stack) >= self.MAX_STACK_SIZE:
-                        raise BabyDuckError("vm", f"Stack Overflow: Se excedió el límite de {MAX_STACK_SIZE} llamadas recursivas")
+                        raise BabyDuckError("vm", f"Stack Overflow: Se excedió el límite de {self.MAX_STACK_SIZE} llamadas recursivas")
 
                     # Guardar dirección de retorno
                     self.jump_stack.append(self.ip + 1)

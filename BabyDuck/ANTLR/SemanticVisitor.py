@@ -49,7 +49,7 @@ class SemanticVisitor(BabyDuckVisitor):
                 "local_flotante": 0, 
                 "temp_entero": 0, 
                 "temp_flotante": 0, 
-                "temp_booleanoeanoeano": 0
+                "temp_booleano": 0
             }
         }
 
@@ -83,7 +83,7 @@ class SemanticVisitor(BabyDuckVisitor):
             "local_flotante": self.mem_manager.counters['local_flotante'] - self.mem_manager.memory_map['local_flotante']['start'],
             "temp_entero": self.mem_manager.counters['temp_entero'] - self.mem_manager.memory_map['temp_entero']['start'],
             "temp_flotante": self.mem_manager.counters['temp_flotante'] - self.mem_manager.memory_map['temp_flotante']['start'],
-            "temp_booleanoeano": self.mem_manager.counters['temp_booleanoeano'] - self.mem_manager.memory_map['temp_booleanoeano']['start'],
+            "temp_booleano": self.mem_manager.counters['temp_booleano'] - self.mem_manager.memory_map['temp_booleano']['start'],
         }
 
         # Guardamos esto en el DirFunc de la función actual
