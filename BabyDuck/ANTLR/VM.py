@@ -14,7 +14,7 @@ class MemoryMap:
     def get(self, address):
         if address not in self.data:
             raise BabyDuckError("vm",
-                f"Error de ejecucion: Se intentó acceder a una variable no inicializada (dirección {address})")
+                f"Error de ejecucion: Se intento acceder a una variable no inicializada (direccion {address})")
         return self.data[address]
 
     def set(self, address, value):
@@ -70,7 +70,7 @@ class VirtualMachine:
             self.call_stack[-1].set(address, value)
 
     def execute(self):
-        print(">>> INICIANDO MÁQUINA VIRTUAL <<<")
+        print(">>> INICIANDO MAQUINA VIRTUAL <<<")
         total_quads = len(self.quadruples)
 
         while self.ip < total_quads:
@@ -148,7 +148,7 @@ class VirtualMachine:
                     func_start_addr = res
 
                     if len(self.call_stack) >= self.MAX_STACK_SIZE:
-                        raise BabyDuckError("vm", f"Stack Overflow: Se excedio el límite de {self.MAX_STACK_SIZE} llamadas recursivas")
+                        raise BabyDuckError("vm", f"Stack Overflow: Se excedio el limite de {self.MAX_STACK_SIZE} llamadas recursivas")
 
                     self.jump_stack.append(self.ip + 1)
 

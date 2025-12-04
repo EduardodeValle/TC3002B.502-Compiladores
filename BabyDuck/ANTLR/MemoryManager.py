@@ -17,16 +17,8 @@ class MemoryManager:
 
         self.counters = {key: val['start'] for key, val in self.memory_map.items()}
 
-    def _print_memory_status(self):
-        """Debuggear estado actual de memoria"""
-        print("\nEstado actual de contadores de Memoria Virtual:")
-        for key, val in self.counters.items():
-            used = val - self.memory_map[key]['start']
-            total = self.memory_map[key]['end'] - self.memory_map[key]['start']
-            print(f"  {key:<12}: {val} (Usados: {used}/{total})")
-
     def get_virtual_address(self, scope: str, var_type: str) -> int:
-        """Genera dirección virtual basada en scope y tipo"""
+        """Genera direccion virtual basada en scope y tipo"""
         mem_key = f"{scope}_{var_type}"
 
         if mem_key not in self.counters:
@@ -44,7 +36,7 @@ class MemoryManager:
 
     def reset_local_memory(self):
         """Reinicia contadores de memoria local y temporal"""
-        print("--- Reiniciando memoria Local y Temporal para nueva función ---")
+        print("--- Reiniciando memoria Local y Temporal para nueva funcion ---")
         reset_keys = ['local_entero', 'local_flotante', 'temp_entero', 'temp_flotante', 'temp_booleano']
 
         for key in reset_keys:

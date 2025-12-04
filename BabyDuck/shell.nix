@@ -16,7 +16,7 @@ pkgs.mkShell {
     pkgs.jdk
   ];
 
-  # hook para confirmar que todo cargó
+  # hook para confirmar que todo cargo
   shellHook = ''
     echo "Entorno de Compilador activado"
     echo "   Variable: \$ANTLR_JAR"

@@ -34,7 +34,7 @@ class SemanticVisitor(BabyDuckVisitor):
         self.current_function_has_return = False
 
     def _create_function_entry(self, return_type, start_quad):
-        """Crea entrada para nueva función"""
+        """Crea entrada para nueva funcion"""
         return {
             "type": return_type,
             "start_quad": start_quad,
@@ -51,7 +51,7 @@ class SemanticVisitor(BabyDuckVisitor):
         }
 
     def _declare_function(self, func_name, return_type, start_quad):
-        """Registra función y cambia scope"""
+        """Registra funcion y cambia scope"""
         if func_name in self.dir_func:
             raise BabyDuckError("semantico", f"La funcion '{func_name}' ya existe")
 
@@ -60,7 +60,7 @@ class SemanticVisitor(BabyDuckVisitor):
         self.mem_manager.reset_local_memory()
 
     def _end_function_logic(self):
-        """Calcula recursos usados y finaliza función"""
+        """Calcula recursos usados y finaliza funcion"""
         used_resources = {
             "local_entero": self.mem_manager.counters['local_entero'] - self.mem_manager.memory_map['local_entero']['start'],
             "local_flotante": self.mem_manager.counters['local_flotante'] - self.mem_manager.memory_map['local_flotante']['start'],
@@ -118,7 +118,7 @@ class SemanticVisitor(BabyDuckVisitor):
                 global_vars[var_name]["initialized"] = True
 
     def _add_constant(self, value, const_type):
-        """Agrega constante a tabla y retorna dirección virtual"""
+        """Agrega constante a tabla y retorna direccion virtual"""
         const_key = (value, const_type)
 
         if const_key in self.constant_table:
@@ -136,18 +136,18 @@ class SemanticVisitor(BabyDuckVisitor):
         return virtual_addr
 
     def _generate_quadruple(self, operator, left_operand, right_operand, result):
-        """Genera cuádruplo y retorna su índice"""
+        """Genera cuadruplo y retorna su indice"""
         quad = (operator, left_operand, right_operand, result)
         self.quadruples.append(quad)
         return len(self.quadruples) - 1
 
     def _fill_quadruple(self, quad_index, result_value):
-        """Rellena cuádruplo pendiente"""
+        """Rellena cuadruplo pendiente"""
         operator, left, right, _ = self.quadruples[quad_index]
         self.quadruples[quad_index] = (operator, left, right, result_value)
 
     def _solve_pending_operations(self, allowed_operators):
-        """Resuelve operaciones según precedencia y genera cuádruplos"""
+        """Resuelve operaciones segun precedencia y genera cuadruplos"""
         while (self.operator_stack and
                self.operator_stack[-1] != "(" and
                self.operator_stack[-1] in allowed_operators):
@@ -162,11 +162,11 @@ class SemanticVisitor(BabyDuckVisitor):
                 result_type = self.cube[left_type][right_type][operator]
             except KeyError:
                 raise BabyDuckError("semantico",
-                    f"Operación inválida: {left_type} {operator} {right_type}")
+                    f"Operacion invalida: {left_type} {operator} {right_type}")
 
             if result_type == "error":
                 raise BabyDuckError("semantico",
-                    f"Operación inválida: {left_type} {operator} {right_type}")
+                    f"Operacion invalida: {left_type} {operator} {right_type}")
 
             temp_addr = self.mem_manager.get_virtual_address("temp", result_type)
             self._generate_quadruple(operator, left_operand, right_operand, temp_addr)
@@ -175,7 +175,7 @@ class SemanticVisitor(BabyDuckVisitor):
             self.type_stack.append(result_type)
 
     def get_constants_for_vm(self):
-        """Retorna diccionario {dirección: valor} para VM"""
+        """Retorna diccionario {direccion: valor} para VM"""
         constants_map = {}
         for const_info in self.constant_table.values():
             addr = const_info["direccion_virtual"]
@@ -264,7 +264,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
         if not self.current_function_has_return and return_type != "void":
             raise BabyDuckError("semantico",
-                f"La función '{func_name}' debe tener al menos un 'devolver'")
+                f"La funcion '{func_name}' debe tener al menos un 'devolver'")
 
         if return_type == "void" and not self.current_function_has_return:
             self._generate_quadruple("RETURN", None, None, None)
@@ -274,7 +274,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitParametros(self, ctx):
-        """PN 7: Procesar parámetros como variables locales"""
+        """PN 7: Procesar parametros como variables locales"""
         ids = ctx.ID()
         tipos = ctx.tipo()
 
@@ -300,12 +300,12 @@ class SemanticVisitor(BabyDuckVisitor):
         if func_return_type == "void":
             if ctx.exp():
                 raise BabyDuckError("semantico",
-                    "Función 'void' no puede devolver un valor")
+                    "Funcion 'void' no puede devolver un valor")
             self._generate_quadruple("RETURN", None, None, None)
         else:
             if not ctx.exp():
                 raise BabyDuckError("semantico",
-                    f"Función de tipo '{func_return_type}' debe devolver un valor")
+                    f"Funcion de tipo '{func_return_type}' debe devolver un valor")
 
             self.visit(ctx.exp())
 
@@ -345,7 +345,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitContinuacion_de_estatuto_id(self, ctx):
-        """PN 12, 20-22: Asignación o llamada a función"""
+        """PN 12, 20-22: Asignacion o llamada a funcion"""
         if ctx.ASIGNACION():
             var_name = self.current_id
             var_info = self._lookup_variable(var_name)
@@ -377,7 +377,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
             if func_name not in self.dir_func:
                 raise BabyDuckError("semantico",
-                    f"Función '{func_name}' no declarada")
+                    f"Funcion '{func_name}' no declarada")
 
             func_info = self.dir_func[func_name]
             self._generate_quadruple("ERA", func_name, None, None)
@@ -386,8 +386,8 @@ class SemanticVisitor(BabyDuckVisitor):
             expected_params = func_info["param_signature"]
             param_addresses = func_info["param_addresses"]
 
-            # Poner un paréntesis falso para evitar que se resuelvan operaciones pendientes
-            # mientras se procesan los argumentos de la función
+            # Poner un parentesis falso para evitar que se resuelvan operaciones pendientes
+            # mientras se procesan los argumentos de la funcion
             self.operator_stack.append("(")
 
             if ctx.expresion():
@@ -396,7 +396,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
                     if param_count >= len(expected_params):
                         raise BabyDuckError("semantico",
-                            f"Demasiados argumentos para función '{func_name}'")
+                            f"Demasiados argumentos para funcion '{func_name}'")
 
                     arg_type = self.type_stack.pop()
                     arg_addr = self.operand_stack.pop()
@@ -410,13 +410,13 @@ class SemanticVisitor(BabyDuckVisitor):
                     self._generate_quadruple("PARAMETER", arg_addr, None, param_dest_addr)
                     param_count += 1
 
-            # Remover el paréntesis falso
+            # Remover el parentesis falso
             if self.operator_stack and self.operator_stack[-1] == "(":
                 self.operator_stack.pop()
 
             if param_count != len(expected_params):
                 raise BabyDuckError("semantico",
-                    f"Función '{func_name}' espera {len(expected_params)} argumentos pero se recibieron {param_count}")
+                    f"Funcion '{func_name}' espera {len(expected_params)} argumentos pero se recibieron {param_count}")
 
             start_addr = func_info["start_quad"]
             self._generate_quadruple("GOSUB", func_name, None, start_addr)
@@ -432,7 +432,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitImprime(self, ctx):
-        """PN 13: Generar cuádruplos PRINT"""
+        """PN 13: Generar cuadruplos PRINT"""
         self.visit(ctx.imprimir_elementos())
         return None
 
@@ -469,7 +469,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
         if expr_type != "booleano":
             raise BabyDuckError("semantico",
-                "La condición del 'si' debe ser una expresión booleana")
+                "La condicion del 'si' debe ser una expresion booleana")
 
         gotof_index = self._generate_quadruple("GOTOF", expr_addr, None, None)
         self.jump_stack.append(gotof_index)
@@ -503,7 +503,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
         if expr_type != "booleano":
             raise BabyDuckError("semantico",
-                "La condición del 'mientras' debe ser una expresión booleana")
+                "La condicion del 'mientras' debe ser una expresion booleana")
 
         gotof_index = self._generate_quadruple("GOTOF", expr_addr, None, None)
         self.jump_stack.append(gotof_index)
@@ -545,7 +545,7 @@ class SemanticVisitor(BabyDuckVisitor):
         for i in range(1, len(ctx.termino())):
             # Acceder al operador directamente desde children
             # Los children son: termino, operador, termino, operador, termino, ...
-            # El operador entre termino(i-1) y termino(i) está en children[2*i - 1]
+            # El operador entre termino(i-1) y termino(i) esta en children[2*i - 1]
             operator_token = ctx.children[2*i - 1]
             if operator_token.getText() == '+':
                 operator = "+"
@@ -559,12 +559,12 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitTermino(self, ctx):
-        """Procesa multiplicación y división"""
+        """Procesa multiplicacion y division"""
         self.visit(ctx.factor(0))
 
         for i in range(1, len(ctx.factor())):
             # Acceder al operador directamente desde children
-            # El operador entre factor(i-1) y factor(i) está en children[2*i - 1]
+            # El operador entre factor(i-1) y factor(i) esta en children[2*i - 1]
             operator_token = ctx.children[2*i - 1]
             if operator_token.getText() == '*':
                 operator = "*"
@@ -578,7 +578,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitFactor(self, ctx):
-        """Procesa factores con signos unarios y paréntesis"""
+        """Procesa factores con signos unarios y parentesis"""
         if ctx.PARENTESIS_IZQUIERDO():
             self.operator_stack.append("(")
             self.visit(ctx.expresion())
@@ -605,7 +605,7 @@ class SemanticVisitor(BabyDuckVisitor):
         return None
 
     def visitDato_o_llamada(self, ctx):
-        """PN 9-11: Procesa ID, constantes o llamadas a función"""
+        """PN 9-11: Procesa ID, constantes o llamadas a funcion"""
         if ctx.ID():
             var_name = ctx.ID().getText()
 
@@ -614,7 +614,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
                 if func_name not in self.dir_func:
                     raise BabyDuckError("semantico",
-                        f"Función '{func_name}' no declarada")
+                        f"Funcion '{func_name}' no declarada")
 
                 func_info = self.dir_func[func_name]
                 self._generate_quadruple("ERA", func_name, None, None)
@@ -623,8 +623,8 @@ class SemanticVisitor(BabyDuckVisitor):
                 expected_params = func_info["param_signature"]
                 param_addresses = func_info["param_addresses"]
 
-                # Poner un paréntesis falso para evitar que se resuelvan operaciones pendientes
-                # mientras se procesan los argumentos de la función
+                # Poner un parentesis falso para evitar que se resuelvan operaciones pendientes
+                # mientras se procesan los argumentos de la funcion
                 self.operator_stack.append("(")
 
                 if ctx.expresion():
@@ -633,7 +633,7 @@ class SemanticVisitor(BabyDuckVisitor):
 
                         if param_count >= len(expected_params):
                             raise BabyDuckError("semantico",
-                                f"Demasiados argumentos para función '{func_name}'")
+                                f"Demasiados argumentos para funcion '{func_name}'")
 
                         arg_type = self.type_stack.pop()
                         arg_addr = self.operand_stack.pop()
@@ -647,13 +647,13 @@ class SemanticVisitor(BabyDuckVisitor):
                         self._generate_quadruple("PARAMETER", arg_addr, None, param_dest_addr)
                         param_count += 1
 
-                # Remover el paréntesis falso
+                # Remover el parentesis falso
                 if self.operator_stack and self.operator_stack[-1] == "(":
                     self.operator_stack.pop()
 
                 if param_count != len(expected_params):
                     raise BabyDuckError("semantico",
-                        f"Función '{func_name}' espera {len(expected_params)} argumentos pero se recibieron {param_count}")
+                        f"Funcion '{func_name}' espera {len(expected_params)} argumentos pero se recibieron {param_count}")
 
                 start_addr = func_info["start_quad"]
                 self._generate_quadruple("GOSUB", func_name, None, start_addr)

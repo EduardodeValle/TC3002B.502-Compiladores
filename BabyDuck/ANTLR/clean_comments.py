@@ -13,13 +13,13 @@ def clean_python_file(filepath):
 
     # Reemplazar docstrings largos con versiones cortas
     content = re.sub(
-        r'"""[\s\n]*Punto Neurálgico \d+:([^\n]+)[\s\S]*?"""',
+        r'"""[\s\n]*Punto Neuralgico \d+:([^\n]+)[\s\S]*?"""',
         r'"""PN:\1"""',
         content
     )
 
     content = re.sub(
-        r'"""[\s\n]*Puntos Neurálgicos \d+-\d+:([^\n]+)[\s\S]*?"""',
+        r'"""[\s\n]*Puntos Neuralgicos \d+-\d+:([^\n]+)[\s\S]*?"""',
         r'"""PN:\1"""',
         content
     )
@@ -36,7 +36,7 @@ def clean_python_file(filepath):
         # Detectar inicio de docstring
         if '"""' in stripped and not in_docstring:
             if stripped.count('"""') == 2:
-                # Docstring de una línea
+                # Docstring de una linea
                 cleaned_lines.append(line)
             else:
                 in_docstring = True
@@ -46,7 +46,7 @@ def clean_python_file(filepath):
             if '"""' in stripped:
                 # Fin del docstring
                 in_docstring = False
-                # Solo mantener primera línea significativa
+                # Solo mantener primera linea significativa
                 first_line = docstring_lines[0]
                 if len(docstring_lines) <= 3:
                     # Docstring corto, mantener

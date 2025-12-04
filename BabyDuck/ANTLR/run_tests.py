@@ -7,7 +7,7 @@ import sys
 import pytest
 
 def main():
-    """Ejecuta las pruebas con configuración personalizada"""
+    """Ejecuta las pruebas con configuracion personalizada"""
 
     print("""
 ================================================================================
@@ -17,7 +17,7 @@ def main():
 ================================================================================
 """)
 
-    # Configuración de pytest
+    # Configuracion de pytest
     args = [
         "test_compiler.py",
         "-v",                    # Verbose

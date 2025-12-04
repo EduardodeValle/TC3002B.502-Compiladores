@@ -20,18 +20,18 @@ devuelve: DEVOLVER exp? PUNTO_Y_COMA ;
 estatuto: ID continuacion_de_estatuto_id | condicion | ciclo | imprime | CORCHETE_IZQUIERDO estatuto* CORCHETE_DERECHO | devuelve ;
 continuacion_de_estatuto_id: ASIGNACION expresion PUNTO_Y_COMA | PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO PUNTO_Y_COMA ;
 
-// La regla <ASIGNA> aparece en todas las reglas como una ambigüedad, por eso su lógica se implementó
-// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser útil para la
-// gramática. Se eliminó pero se conservó como comentario para mostrar su lugar en el diagrama de sintaxis
+// La regla <ASIGNA> aparece en todas las reglas como una ambigüedad, por eso su logica se implemento
+// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser util para la
+// gramatica. Se elimino pero se conservo como comentario para mostrar su lugar en el diagrama de sintaxis
 // asigna: ID ASIGNACION expresion PUNTO_Y_COMA ;
 
 condicion: SI PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO cuerpo (SINO cuerpo)? PUNTO_Y_COMA ;
 
 ciclo: MIENTRAS PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO HAZ cuerpo PUNTO_Y_COMA ;
 
-// La regla <LLAMADA> aparece en todas las reglas como una ambigüedad, por eso su lógica se implementó
-// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser útil para la
-// gramática. Se eliminó pero se conservó como comentario para mostrar su lugar en el diagrama de sintaxis
+// La regla <LLAMADA> aparece en todas las reglas como una ambigüedad, por eso su logica se implemento
+// manualmente en cada caso. Como consecuencia ninguna otra regla la llama y deja de ser util para la
+// gramatica. Se elimino pero se conservo como comentario para mostrar su lugar en el diagrama de sintaxis
 // llamada: ID PARENTESIS_IZQUIERDO (expresion (COMA expresion)*)? PARENTESIS_DERECHO ;
 
 imprime: ESCRIBE PARENTESIS_IZQUIERDO imprimir_elementos PARENTESIS_DERECHO PUNTO_Y_COMA ;
@@ -95,5 +95,5 @@ CTE_ENT: [0-9]+;
 CTE_FLOT: [0-9]+ '.' [0-9]+;
 LETRERO: '"' .*? '"';
 
-// Ignorar espacios en blanco y saltos de línea
+// Ignorar espacios en blanco y saltos de linea
 ESPACIOS: [ \t\r\n]+ -> skip;

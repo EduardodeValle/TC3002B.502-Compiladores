@@ -43,7 +43,7 @@ class TestBabyDuckCompiler:
 
         Args:
             filepath: Ruta al archivo de prueba
-            expected_success: True si se espera compilación exitosa, False si se espera error
+            expected_success: True si se espera compilacion exitosa, False si se espera error
 
         Returns:
             tuple: (success, output, error_message)
@@ -85,8 +85,8 @@ class TestBabyDuckCompiler:
             return False, stdout_value, error_msg
 
     def test_valid_programs(self):
-        """Prueba todos los programas válidos que deben compilar exitosamente"""
-        self.print_header("PRUEBAS DE CASOS VÁLIDOS", "=", 80)
+        """Prueba todos los programas validos que deben compilar exitosamente"""
+        self.print_header("PRUEBAS DE CASOS VALIDOS", "=", 80)
 
         valid_files = self.get_test_files(self.VALID_TESTS_DIR)
 
@@ -108,18 +108,18 @@ class TestBabyDuckCompiler:
             print(output)
 
             if success:
-                print(f" PASÓ: {test_file.name}")
+                print(f" PASO: {test_file.name}")
                 results["passed"].append(test_file.name)
             else:
-                print(f" FALLÓ: {test_file.name}")
+                print(f" FALLO: {test_file.name}")
                 if error:
                     print(f"Error: {error}")
                 results["failed"].append(test_file.name)
 
             self.print_separator("-", 80)
 
-        # Resumen de casos válidos
-        self.print_header("RESUMEN - CASOS VÁLIDOS", "=", 80)
+        # Resumen de casos validos
+        self.print_header("RESUMEN - CASOS VALIDOS", "=", 80)
         print(f"Total de archivos: {len(valid_files)}")
         print(f" Pasaron: {len(results['passed'])}")
         print(f" Fallaron: {len(results['failed'])}")
@@ -133,11 +133,11 @@ class TestBabyDuckCompiler:
 
         # Assertion final
         assert len(results["failed"]) == 0, \
-            f"{len(results['failed'])} archivo(s) válido(s) fallaron: {results['failed']}"
+            f"{len(results['failed'])} archivo(s) valido(s) fallaron: {results['failed']}"
 
     def test_invalid_programs(self):
-        """Prueba todos los programas inválidos que deben generar errores semánticos"""
-        self.print_header("PRUEBAS DE CASOS INVÁLIDOS", "=", 80)
+        """Prueba todos los programas invalidos que deben generar errores semanticos"""
+        self.print_header("PRUEBAS DE CASOS INVALIDOS", "=", 80)
 
         invalid_files = self.get_test_files(self.INVALID_TESTS_DIR)
 
@@ -156,21 +156,21 @@ class TestBabyDuckCompiler:
 
             success, output, error = self.run_single_test(test_file, expected_success=False)
 
-            # Para casos inválidos, queremos que FALLE (success=False)
+            # Para casos invalidos, queremos que FALLE (success=False)
             if not success:
-                print(f" PASÓ: {test_file.name} (detectó el error correctamente)")
+                print(f" PASO: {test_file.name} (detecto el error correctamente)")
                 print(f"\nError detectado:")
                 print(error)
                 results["passed"].append(test_file.name)
             else:
-                print(f" FALLÓ: {test_file.name} (debería haber generado error)")
+                print(f" FALLO: {test_file.name} (deberia haber generado error)")
                 print(output)
                 results["failed"].append(test_file.name)
 
             self.print_separator("-", 80)
 
-        # Resumen de casos inválidos
-        self.print_header("RESUMEN - CASOS INVÁLIDOS", "=", 80)
+        # Resumen de casos invalidos
+        self.print_header("RESUMEN - CASOS INVALIDOS", "=", 80)
         print(f"Total de archivos: {len(invalid_files)}")
         print(f" Pasaron (detectaron error): {len(results['passed'])}")
         print(f" Fallaron (no detectaron error): {len(results['failed'])}")
@@ -184,11 +184,11 @@ class TestBabyDuckCompiler:
 
         # Assertion final
         assert len(results["failed"]) == 0, \
-            f"{len(results['failed'])} archivo(s) inválido(s) no detectaron error: {results['failed']}"
+            f"{len(results['failed'])} archivo(s) invalido(s) no detectaron error: {results['failed']}"
 
     def test_runtime_errors(self):
-        """Prueba programas que generan errores en tiempo de ejecución (no semánticos)"""
-        self.print_header("PRUEBAS DE ERRORES EN TIEMPO DE EJECUCIÓN", "=", 80)
+        """Prueba programas que generan errores en tiempo de ejecucion (no semanticos)"""
+        self.print_header("PRUEBAS DE ERRORES EN TIEMPO DE EJECUCION", "=", 80)
 
         runtime_files = self.get_test_files(self.RUNTIME_ERRORS_DIR)
 
@@ -210,16 +210,16 @@ class TestBabyDuckCompiler:
             # Para errores de runtime, queremos que FALLE (success=False)
             # pero el error debe ser de runtime (division por cero, stack overflow, etc.)
             if not success and error:
-                print(f" PASÓ: {test_file.name} (error de runtime detectado)")
+                print(f" PASO: {test_file.name} (error de runtime detectado)")
                 print(f"\nError detectado:")
                 print(error)
                 results["passed"].append(test_file.name)
             elif success:
-                print(f" FALLÓ: {test_file.name} (debería haber generado error de runtime)")
+                print(f" FALLO: {test_file.name} (deberia haber generado error de runtime)")
                 print(output)
                 results["failed"].append(test_file.name)
             else:
-                print(f" FALLÓ: {test_file.name} (error inesperado)")
+                print(f" FALLO: {test_file.name} (error inesperado)")
                 results["failed"].append(test_file.name)
 
             self.print_separator("-", 80)
@@ -243,7 +243,7 @@ class TestBabyDuckCompiler:
 
 
 class TestIndividualValidCases:
-    """Tests individuales para cada caso válido (para poder ejecutarlos por separado)"""
+    """Tests individuales para cada caso valido (para poder ejecutarlos por separado)"""
 
     VALID_TESTS_DIR = Path("Tests/Semantica/Validos")
 
@@ -252,7 +252,7 @@ class TestIndividualValidCases:
         return request.param
 
     def test_individual_valid(self, valid_file):
-        """Prueba individual de caso válido"""
+        """Prueba individual de caso valido"""
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
@@ -268,11 +268,11 @@ class TestIndividualValidCases:
         except Exception as e:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
-            pytest.fail(f"El archivo válido {valid_file.name} falló: {str(e)}")
+            pytest.fail(f"El archivo valido {valid_file.name} fallo: {str(e)}")
 
 
 class TestIndividualInvalidCases:
-    """Tests individuales para cada caso inválido (para poder ejecutarlos por separado)"""
+    """Tests individuales para cada caso invalido (para poder ejecutarlos por separado)"""
 
     INVALID_TESTS_DIR = Path("Tests/Semantica/Invalidos")
 
@@ -281,7 +281,7 @@ class TestIndividualInvalidCases:
         return request.param
 
     def test_individual_invalid(self, invalid_file):
-        """Prueba individual de caso inválido"""
+        """Prueba individual de caso invalido"""
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
@@ -294,7 +294,7 @@ class TestIndividualInvalidCases:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
 
-            pytest.fail(f"El archivo inválido {invalid_file.name} debería haber generado un error")
+            pytest.fail(f"El archivo invalido {invalid_file.name} deberia haber generado un error")
 
         except BabyDuckError:
             sys.stdout = old_stdout

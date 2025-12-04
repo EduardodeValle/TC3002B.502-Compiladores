@@ -8,7 +8,7 @@ from SemanticVisitor import SemanticVisitor
 from VM import VirtualMachine
 
 def run_compiler(filepath: str):
-    """Pipeline completo de compilación de BabyDuck"""
+    """Pipeline completo de compilacion de BabyDuck"""
     print("Compilando ", filepath)
     input_stream = FileStream(filepath)
     lexer = BabyDuckLexer(input_stream)
@@ -21,11 +21,11 @@ def run_compiler(filepath: str):
     visitor.visit(tree)
 
     print("\n==================================================================")
-    print("Semántica completada")
+    print("Semantica completada")
     print("==================================================================\n")
 
     print("\n==================================================================")
-    print("Generación de cuádruplos completada")
+    print("Generacion de cuadruplos completada")
     print("==================================================================\n")
 
     obj_quadruples = visitor.quadruples
@@ -36,9 +36,9 @@ def run_compiler(filepath: str):
     vm.execute()
 
     print("\n==================================================================")
-    print("Ejecución de código intermedio completada")
+    print("Ejecucion de codigo intermedio completada")
     print("==================================================================\n")
 
     print("\n==================================================================")
-    print("Compilación exitosa del programa")
+    print("Compilacion exitosa del programa")
     print("==================================================================\n")

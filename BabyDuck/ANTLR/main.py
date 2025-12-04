@@ -4,7 +4,7 @@ from compiler import run_compiler
 
 def main():
     if len(sys.argv) < 2:
-        print("Error: no se ingresó un archivo para compilar")
+        print("Error: no se ingreso un archivo para compilar")
         print("Uso: python main.py file.BabyDuck")
         sys.exit(1)
 
@@ -14,7 +14,7 @@ def main():
         run_compiler(filepath)
 
     except BabyDuckError as e:
-        print("\n\nCompilación fallida", file=sys.stderr)
+        print("\n\nCompilacion fallida", file=sys.stderr)
         print(e, file=sys.stderr)
         sys.exit(1)
 
