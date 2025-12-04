@@ -77,22 +77,22 @@ class VirtualMachine:
             op_code, left, right, res = self.quadruples[self.ip]
 
             match op_code:
-                case '+':
+                case "+":
                     l_val = self.get_value(left)
                     r_val = self.get_value(right)
                     self.set_value(res, l_val + r_val)
 
-                case '-':
+                case "-":
                     l_val = self.get_value(left)
                     r_val = self.get_value(right)
                     self.set_value(res, l_val - r_val)
 
-                case '*':
+                case "*":
                     l_val = self.get_value(left)
                     r_val = self.get_value(right)
                     self.set_value(res, l_val * r_val)
 
-                case '/':
+                case "/":
                     l_val = self.get_value(left)
                     r_val = self.get_value(right)
                     if r_val == 0:
@@ -102,53 +102,53 @@ class VirtualMachine:
                         self.set_value(res, int(l_val // r_val))
                     else:
                         self.set_value(res, l_val / r_val)
-                case '>':
+                case ">":
                     self.set_value(res, self.get_value(left) > self.get_value(right))
-                case '<':
+                case "<":
                     self.set_value(res, self.get_value(left) < self.get_value(right))
-                case '==':
+                case "==":
                     self.set_value(res, self.get_value(left) == self.get_value(right))
-                case '!=':
+                case "!=":
                     self.set_value(res, self.get_value(left) != self.get_value(right))
 
-                case '=':
+                case "=":
                     val = self.get_value(left)
                     self.set_value(res, val)
                 
-                case 'unario+':
+                case "unario+":
                     val = self.get_value(left)
                     self.set_value(res, +val)
 
-                case 'unario-':
+                case "unario-":
                     val = self.get_value(left)
                     self.set_value(res, -val)
 
-                case 'PRINT':
+                case "PRINT":
                     val_to_print = self.get_value(res)
                     print(f"> {val_to_print}")
 
-                case 'GOTO':
+                case "GOTO":
                     self.ip = res
                     continue
 
-                case 'GOTOF':
+                case "GOTOF":
                     condition = self.get_value(left)
                     if not condition:
                         self.ip = res
                         continue
-                case 'ERA':
+                case "ERA":
                     func_name = left
                     self.mem_pending_stack.append(MemoryMap(f"Scope_{func_name}"))
 
-                case 'PARAMETER':
+                case "PARAMETER":
                     val = self.get_value(left)
                     self.mem_pending_stack[-1].set(res, val)
 
-                case 'GOSUB':
+                case "GOSUB":
                     func_start_addr = res
 
                     if len(self.call_stack) >= self.MAX_STACK_SIZE:
-                        raise BabyDuckError("vm", f"Stack Overflow: Se excedió el límite de {self.MAX_STACK_SIZE} llamadas recursivas")
+                        raise BabyDuckError("vm", f"Stack Overflow: Se excedio el límite de {self.MAX_STACK_SIZE} llamadas recursivas")
 
                     self.jump_stack.append(self.ip + 1)
 
@@ -160,12 +160,12 @@ class VirtualMachine:
                     self.ip = func_start_addr
                     continue
 
-                case 'ENDFUNCTION':
+                case "ENDFUNCTION":
                     self.call_stack.pop()
                     self.ip = self.jump_stack.pop()
                     continue
 
-                case 'RETURN':
+                case "RETURN":
                     ret_val = self.get_value(left)
 
                     if res in GLOBAL_RANGES:
@@ -177,8 +177,8 @@ class VirtualMachine:
                     self.ip = self.jump_stack.pop()
                     continue
 
-                case 'END':
-                    print("\n>>> EJECUCIÓN FINALIZADA CON ÉXITO <<<")
+                case "END":
+                    print("\n>>> EJECUCION FINALIZADA CON EXITO <<<")
                     return
 
                 case _:
