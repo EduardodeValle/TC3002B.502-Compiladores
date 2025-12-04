@@ -1,6 +1,6 @@
 # Tests de Análisis Semántico para BabyDuck
 
-## Casos Válidos (Tests/ConSemantica/Validos)
+## Casos Válidos (Tests/Semantica/Validos)
 
 ### Básicos
 1. **prueba1.txt** - Variables básicas, asignaciones, impresión
@@ -27,7 +27,7 @@ Todos los archivos en Validos/ deben **compilar exitosamente** y ejecutarse sin 
 
 ---
 
-## Casos Inválidos (Tests/ConSemantica/Invalidos)
+## Casos Inválidos (Tests/Semantica/Invalidos)
 
 ### Errores de Variables
 1. **error_variable_no_declarada.txt** - Uso de variable no declarada

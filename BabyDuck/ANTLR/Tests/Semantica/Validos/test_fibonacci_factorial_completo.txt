@@ -1,0 +1,154 @@
+programa testFibonacciFactorial;
+vars
+    n, i, resultado, prev, current, temp : entero;
+
+entero fibRecursivo(num : entero) {
+    {
+        si (num < 2) {
+            devolver num;
+        } sino {
+            devolver fibRecursivo(num - 1) + fibRecursivo(num - 2);
+        };
+    }
+};
+
+entero factRecursivo(num : entero) {
+    {
+        si (num < 2) {
+            devolver 1;
+        } sino {
+            devolver num * factRecursivo(num - 1);
+        };
+    }
+};
+
+inicio
+    {
+        escribe("=== PRUEBAS DE FIBONACCI ===");
+
+        escribe("");
+        escribe("--- Fibonacci Recursivo ---");
+        n = 0;
+        resultado = fibRecursivo(n);
+        escribe("Fibonacci recursivo de 0:");
+        escribe(resultado);
+
+        n = 1;
+        resultado = fibRecursivo(n);
+        escribe("Fibonacci recursivo de 1:");
+        escribe(resultado);
+
+        n = 5;
+        resultado = fibRecursivo(n);
+        escribe("Fibonacci recursivo de 5:");
+        escribe(resultado);
+
+        n = 8;
+        resultado = fibRecursivo(n);
+        escribe("Fibonacci recursivo de 8:");
+        escribe(resultado);
+
+        escribe("");
+        escribe("--- Fibonacci Secuencial ---");
+
+        n = 0;
+        escribe("Fibonacci secuencial de 0:");
+        escribe(0);
+
+        n = 1;
+        escribe("Fibonacci secuencial de 1:");
+        escribe(1);
+
+        n = 5;
+        prev = 0;
+        current = 1;
+        i = 2;
+        mientras (i < n + 1) haz {
+            temp = current;
+            current = prev + current;
+            prev = temp;
+            i = i + 1;
+        };
+        escribe("Fibonacci secuencial de 5:");
+        escribe(current);
+
+        n = 8;
+        prev = 0;
+        current = 1;
+        i = 2;
+        mientras (i < n + 1) haz {
+            temp = current;
+            current = prev + current;
+            prev = temp;
+            i = i + 1;
+        };
+        escribe("Fibonacci secuencial de 8:");
+        escribe(current);
+
+        escribe("");
+        escribe("=== PRUEBAS DE FACTORIAL ===");
+
+        escribe("");
+        escribe("--- Factorial Recursivo ---");
+        n = 0;
+        resultado = factRecursivo(n);
+        escribe("Factorial recursivo de 0:");
+        escribe(resultado);
+
+        n = 1;
+        resultado = factRecursivo(n);
+        escribe("Factorial recursivo de 1:");
+        escribe(resultado);
+
+        n = 5;
+        resultado = factRecursivo(n);
+        escribe("Factorial recursivo de 5:");
+        escribe(resultado);
+
+        n = 7;
+        resultado = factRecursivo(n);
+        escribe("Factorial recursivo de 7:");
+        escribe(resultado);
+
+        escribe("");
+        escribe("--- Factorial Secuencial ---");
+
+        n = 0;
+        escribe("Factorial secuencial de 0:");
+        escribe(1);
+
+        n = 1;
+        escribe("Factorial secuencial de 1:");
+        escribe(1);
+
+        n = 5;
+        resultado = 1;
+        i = 1;
+        mientras (i < n + 1) haz {
+            resultado = resultado * i;
+            i = i + 1;
+        };
+        escribe("Factorial secuencial de 5:");
+        escribe(resultado);
+
+        n = 7;
+        resultado = 1;
+        i = 1;
+        mientras (i < n + 1) haz {
+            resultado = resultado * i;
+            i = i + 1;
+        };
+        escribe("Factorial secuencial de 7:");
+        escribe(resultado);
+
+        escribe("");
+        escribe("=== PRUEBAS COMBINADAS ===");
+        escribe("Factorial de 4 + Fibonacci de 6:");
+        resultado = factRecursivo(4) + fibRecursivo(6);
+        escribe(resultado);
+
+        escribe("Fibonacci de 7 * 2:");
+        resultado = fibRecursivo(7) * 2;
+        escribe(resultado);
+    }
+fin

@@ -1,0 +1,20 @@
+programa variableNoInicializada;
+vars
+    a, b, c : entero;
+    x : flotante;
+
+inicio
+    {
+        escribe("Intentando usar variable no inicializada:");
+
+        b = 10;
+        c = a + b;
+
+        escribe("Resultado de (no_inicializado + 10):");
+        escribe(c);
+
+        escribe("Operacion con flotante no inicializado:");
+        x = x * 2.0;
+        escribe(x);
+    }
+fin

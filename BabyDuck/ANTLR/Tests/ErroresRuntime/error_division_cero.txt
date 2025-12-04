@@ -1,0 +1,15 @@
+programa divisionCero;
+vars
+    a, b, c : entero;
+
+inicio
+    {
+        a = 10;
+        b = 5;
+        c = 2;
+
+        escribe("Calculando 10 / (5 - 5):");
+        a = a / (b - b);
+        escribe(a);
+    }
+fin

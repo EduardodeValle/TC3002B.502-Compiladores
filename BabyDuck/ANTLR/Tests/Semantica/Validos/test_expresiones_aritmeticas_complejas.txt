@@ -1,0 +1,166 @@
+programa testExpresionesComplejas;
+vars
+    a, b, c, d, e : entero;
+    x, y, z : flotante;
+    resultado_e : entero;
+    resultado_f : flotante;
+
+inicio
+    {
+        escribe("=== EXPRESIONES ARITMETICAS COMPLEJAS CON ENTEROS ===");
+
+        a = 10;
+        b = 3;
+        c = 5;
+        d = 2;
+        e = 7;
+
+        escribe("");
+        escribe("Variables: a=10, b=3, c=5, d=2, e=7");
+        escribe("");
+
+        resultado_e = a + b * c;
+        escribe("a + b * c = 10 + 3 * 5 = 25:");
+        escribe(resultado_e);
+
+        resultado_e = (a + b) * c;
+        escribe("(a + b) * c = (10 + 3) * 5 = 65:");
+        escribe(resultado_e);
+
+        resultado_e = a * b + c * d;
+        escribe("a * b + c * d = 10 * 3 + 5 * 2 = 40:");
+        escribe(resultado_e);
+
+        resultado_e = (a + b) * (c + d);
+        escribe("(a + b) * (c + d) = (10 + 3) * (5 + 2) = 91:");
+        escribe(resultado_e);
+
+        resultado_e = a * b * c / d;
+        escribe("a * b * c / d = 10 * 3 * 5 / 2 = 75:");
+        escribe(resultado_e);
+
+        resultado_e = a + b - c + d - e;
+        escribe("a + b - c + d - e = 10 + 3 - 5 + 2 - 7 = 3:");
+        escribe(resultado_e);
+
+        resultado_e = a * (b + c) - d * e;
+        escribe("a * (b + c) - d * e = 10 * (3 + 5) - 2 * 7 = 66:");
+        escribe(resultado_e);
+
+        resultado_e = ((a + b) * c - d) / e;
+        escribe("((a + b) * c - d) / e = ((10 + 3) * 5 - 2) / 7 = 9:");
+        escribe(resultado_e);
+
+        resultado_e = a / d + b * c - e;
+        escribe("a / d + b * c - e = 10 / 2 + 3 * 5 - 7 = 13:");
+        escribe(resultado_e);
+
+        resultado_e = (a - b) * (c - d) + e;
+        escribe("(a - b) * (c - d) + e = (10 - 3) * (5 - 2) + 7 = 28:");
+        escribe(resultado_e);
+
+        escribe("");
+        escribe("=== EXPRESIONES ARITMETICAS COMPLEJAS CON FLOTANTES ===");
+
+        x = 10.5;
+        y = 2.5;
+        z = 3.0;
+
+        escribe("");
+        escribe("Variables: x=10.5, y=2.5, z=3.0");
+        escribe("");
+
+        resultado_f = x + y * z;
+        escribe("x + y * z = 10.5 + 2.5 * 3.0 = 18.0:");
+        escribe(resultado_f);
+
+        resultado_f = (x + y) * z;
+        escribe("(x + y) * z = (10.5 + 2.5) * 3.0 = 39.0:");
+        escribe(resultado_f);
+
+        resultado_f = x * y + z;
+        escribe("x * y + z = 10.5 * 2.5 + 3.0 = 29.25:");
+        escribe(resultado_f);
+
+        resultado_f = x / y + z;
+        escribe("x / y + z = 10.5 / 2.5 + 3.0 = 7.2:");
+        escribe(resultado_f);
+
+        resultado_f = (x + y) / z;
+        escribe("(x + y) / z = (10.5 + 2.5) / 3.0 = 4.333..:");
+        escribe(resultado_f);
+
+        resultado_f = x * (y + z) / y;
+        escribe("x * (y + z) / y = 10.5 * (2.5 + 3.0) / 2.5 = 23.1:");
+        escribe(resultado_f);
+
+        resultado_f = (x - y) * (z + y);
+        escribe("(x - y) * (z + y) = (10.5 - 2.5) * (3.0 + 2.5) = 44.0:");
+        escribe(resultado_f);
+
+        resultado_f = x / z * y;
+        escribe("x / z * y = 10.5 / 3.0 * 2.5 = 8.75:");
+        escribe(resultado_f);
+
+        escribe("");
+        escribe("=== EXPRESIONES CON PARENTESIS ANIDADOS ===");
+
+        a = 8;
+        b = 4;
+        c = 2;
+        d = 6;
+
+        escribe("");
+        escribe("Variables: a=8, b=4, c=2, d=6");
+        escribe("");
+
+        resultado_e = ((a + b) * (c + d)) / b;
+        escribe("((a + b) * (c + d)) / b = ((8 + 4) * (2 + 6)) / 4 = 24:");
+        escribe(resultado_e);
+
+        resultado_e = (a * (b + c)) - (d * c);
+        escribe("(a * (b + c)) - (d * c) = (8 * (4 + 2)) - (6 * 2) = 36:");
+        escribe(resultado_e);
+
+        resultado_e = ((a - b) + (c * d)) / c;
+        escribe("((a - b) + (c * d)) / c = ((8 - 4) + (2 * 6)) / 2 = 8:");
+        escribe(resultado_e);
+
+        resultado_e = (a / c) + (b / c) + d;
+        escribe("(a / c) + (b / c) + d = (8 / 2) + (4 / 2) + 6 = 12:");
+        escribe(resultado_e);
+
+        escribe("");
+        escribe("=== EXPRESIONES CON MUCHOS TERMINOS ===");
+
+        a = 5;
+        b = 3;
+        c = 2;
+        d = 4;
+        e = 1;
+
+        escribe("");
+        escribe("Variables: a=5, b=3, c=2, d=4, e=1");
+        escribe("");
+
+        resultado_e = a + b + c + d + e;
+        escribe("a + b + c + d + e = 5 + 3 + 2 + 4 + 1 = 15:");
+        escribe(resultado_e);
+
+        resultado_e = a * b * c * d * e;
+        escribe("a * b * c * d * e = 5 * 3 * 2 * 4 * 1 = 120:");
+        escribe(resultado_e);
+
+        resultado_e = a - b + c - d + e;
+        escribe("a - b + c - d + e = 5 - 3 + 2 - 4 + 1 = 1:");
+        escribe(resultado_e);
+
+        resultado_e = a * b + c * d - e;
+        escribe("a * b + c * d - e = 5 * 3 + 2 * 4 - 1 = 22:");
+        escribe(resultado_e);
+
+        resultado_e = (a + b) * (c + d) - e * a;
+        escribe("(a + b) * (c + d) - e * a = (5 + 3) * (2 + 4) - 1 * 5 = 43:");
+        escribe(resultado_e);
+    }
+fin

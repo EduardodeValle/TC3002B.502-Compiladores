@@ -386,6 +386,10 @@ class SemanticVisitor(BabyDuckVisitor):
             expected_params = func_info["param_signature"]
             param_addresses = func_info["param_addresses"]
 
+            # Poner un paréntesis falso para evitar que se resuelvan operaciones pendientes
+            # mientras se procesan los argumentos de la función
+            self.operator_stack.append("(")
+
             if ctx.expresion():
                 for expr_ctx in ctx.expresion():
                     self.visit(expr_ctx)
@@ -405,6 +409,10 @@ class SemanticVisitor(BabyDuckVisitor):
                     param_dest_addr = param_addresses[param_count]
                     self._generate_quadruple("PARAMETER", arg_addr, None, param_dest_addr)
                     param_count += 1
+
+            # Remover el paréntesis falso
+            if self.operator_stack and self.operator_stack[-1] == "(":
+                self.operator_stack.pop()
 
             if param_count != len(expected_params):
                 raise BabyDuckError("semantico",
@@ -535,9 +543,13 @@ class SemanticVisitor(BabyDuckVisitor):
         self.visit(ctx.termino(0))
 
         for i in range(1, len(ctx.termino())):
-            if ctx.MAS(i-1):
+            # Acceder al operador directamente desde children
+            # Los children son: termino, operador, termino, operador, termino, ...
+            # El operador entre termino(i-1) y termino(i) está en children[2*i - 1]
+            operator_token = ctx.children[2*i - 1]
+            if operator_token.getText() == '+':
                 operator = "+"
-            elif ctx.MENOS(i-1):
+            else:  # operator_token.getText() == '-'
                 operator = "-"
 
             self.operator_stack.append(operator)
@@ -551,9 +563,12 @@ class SemanticVisitor(BabyDuckVisitor):
         self.visit(ctx.factor(0))
 
         for i in range(1, len(ctx.factor())):
-            if ctx.MULTIPLICACION(i-1):
+            # Acceder al operador directamente desde children
+            # El operador entre factor(i-1) y factor(i) está en children[2*i - 1]
+            operator_token = ctx.children[2*i - 1]
+            if operator_token.getText() == '*':
                 operator = "*"
-            elif ctx.DIVISION(i-1):
+            else:  # operator_token.getText() == '/'
                 operator = "/"
 
             self.operator_stack.append(operator)
@@ -608,6 +623,10 @@ class SemanticVisitor(BabyDuckVisitor):
                 expected_params = func_info["param_signature"]
                 param_addresses = func_info["param_addresses"]
 
+                # Poner un paréntesis falso para evitar que se resuelvan operaciones pendientes
+                # mientras se procesan los argumentos de la función
+                self.operator_stack.append("(")
+
                 if ctx.expresion():
                     for expr_ctx in ctx.expresion():
                         self.visit(expr_ctx)
@@ -627,6 +646,10 @@ class SemanticVisitor(BabyDuckVisitor):
                         param_dest_addr = param_addresses[param_count]
                         self._generate_quadruple("PARAMETER", arg_addr, None, param_dest_addr)
                         param_count += 1
+
+                # Remover el paréntesis falso
+                if self.operator_stack and self.operator_stack[-1] == "(":
+                    self.operator_stack.pop()
 
                 if param_count != len(expected_params):
                     raise BabyDuckError("semantico",

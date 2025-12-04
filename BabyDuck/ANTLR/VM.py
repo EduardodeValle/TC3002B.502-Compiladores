@@ -12,6 +12,9 @@ class MemoryMap:
         self.data = {}
 
     def get(self, address):
+        if address not in self.data:
+            raise BabyDuckError("vm",
+                f"Error de ejecucion: Se intentó acceder a una variable no inicializada (dirección {address})")
         return self.data[address]
 
     def set(self, address, value):
@@ -30,7 +33,7 @@ class VirtualMachine:
         self.MAX_STACK_SIZE = 1000
         self.call_stack = [MemoryMap("Main_Scope")]
         self.jump_stack = []
-        self.mem_pending = None
+        self.mem_pending_stack = []
 
         self._load_constants(constants_map)
 
@@ -135,11 +138,11 @@ class VirtualMachine:
                         continue
                 case 'ERA':
                     func_name = left
-                    self.mem_pending = MemoryMap(f"Scope_{func_name}")
+                    self.mem_pending_stack.append(MemoryMap(f"Scope_{func_name}"))
 
                 case 'PARAMETER':
                     val = self.get_value(left)
-                    self.mem_pending.set(res, val)
+                    self.mem_pending_stack[-1].set(res, val)
 
                 case 'GOSUB':
                     func_start_addr = res
@@ -149,9 +152,8 @@ class VirtualMachine:
 
                     self.jump_stack.append(self.ip + 1)
 
-                    if self.mem_pending:
-                        self.call_stack.append(self.mem_pending)
-                        self.mem_pending = None
+                    if self.mem_pending_stack:
+                        self.call_stack.append(self.mem_pending_stack.pop())
                     else:
                         self.call_stack.append(MemoryMap("Scope_Void"))
 

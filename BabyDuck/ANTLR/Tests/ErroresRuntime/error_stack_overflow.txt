@@ -1,0 +1,19 @@
+programa stackOverflow;
+vars
+    resultado : entero;
+
+entero recursionInfinita(n : entero) {
+    {
+        escribe(n);
+        devolver recursionInfinita(n + 1);
+    }
+};
+
+inicio
+    {
+        escribe("Iniciando recursion infinita...");
+        resultado = recursionInfinita(1);
+        escribe("Este mensaje nunca se imprimira");
+        escribe(resultado);
+    }
+fin

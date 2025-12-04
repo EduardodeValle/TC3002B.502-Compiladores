@@ -21,8 +21,9 @@ inicio
         escribe("c = -3.14:");
         escribe(c);
 
-        a = -(2 + 3);
-        escribe("a = -(2 + 3):");
+        a = 2 + 3;
+        a = -a;
+        escribe("a = -(2 + 3) pero con una doble asignacion con a = -a:");
         escribe(a);
 
         b = -a * 2;
