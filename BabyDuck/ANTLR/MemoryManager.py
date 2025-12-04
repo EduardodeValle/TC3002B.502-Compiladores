@@ -2,8 +2,6 @@ from BabyDuckError import BabyDuckError
 
 class MemoryManager:
     def __init__(self):
-        # globales y constantes nunca se reinician
-        # locales y temporales se reinician por funcion
         self.memory_map = {
             "global_entero":   {"start": 1000, "end": 1999},
             "global_flotante": {"start": 2000, "end": 2999},
@@ -11,19 +9,16 @@ class MemoryManager:
             "local_flotante":  {"start": 4000, "end": 4999},
             "temp_entero":     {"start": 5000, "end": 5999},
             "temp_flotante":   {"start": 6000, "end": 6999},
-            "temp_booleano":    {"start": 7000, "end": 7999}, # solo existen como temporales no como variables
+            "temp_booleano":   {"start": 7000, "end": 7999},
             "const_entero":    {"start": 8000, "end": 8999},
             "const_flotante":  {"start": 9000, "end": 9999},
-            "const_string": {"start": 10000, "end": 10999} # solo existe en el token letrero
+            "const_string":    {"start": 10000, "end": 10999}
         }
 
-        # inicializar contadores en el valor de inicio de cada rango
         self.counters = {key: val['start'] for key, val in self.memory_map.items()}
 
     def _print_memory_status(self):
-        """
-        Helper function para debuggear el estado actual de la memoria.
-        """
+        """Debuggear estado actual de memoria"""
         print("\nEstado actual de contadores de Memoria Virtual:")
         for key, val in self.counters.items():
             used = val - self.memory_map[key]['start']
@@ -31,18 +26,12 @@ class MemoryManager:
             print(f"  {key:<12}: {val} (Usados: {used}/{total})")
 
     def get_virtual_address(self, scope: str, var_type: str) -> int:
-        """
-        Genera una direccion virtual basada en el scope y el tipo.
-        
-        scope: 'global', 'local', 'temp', 'const'
-        var_type: 'int', 'float', 'bool'
-        """
+        """Genera dirección virtual basada en scope y tipo"""
         mem_key = f"{scope}_{var_type}"
 
         if mem_key not in self.counters:
             raise BabyDuckError("direcciones virtuales", f"Error: se intento asignar una direccion para {var_type} en {scope}")
 
-        # obtener dirección actual y limites
         current_addr = self.counters[mem_key]
         limit = self.memory_map[mem_key]['end']
 
@@ -54,12 +43,9 @@ class MemoryManager:
         return current_addr
 
     def reset_local_memory(self):
-        """
-        Reinicia los contadores de memoria local y temporal, se llama
-        cada vez que se cambia de scope
-        """
+        """Reinicia contadores de memoria local y temporal"""
         print("--- Reiniciando memoria Local y Temporal para nueva función ---")
         reset_keys = ['local_entero', 'local_flotante', 'temp_entero', 'temp_flotante', 'temp_booleano']
-        
+
         for key in reset_keys:
             self.counters[key] = self.memory_map[key]['start']
