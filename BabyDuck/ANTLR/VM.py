@@ -21,10 +21,9 @@ class MemoryMap:
         self.data[address] = value
 
 class VirtualMachine:
-    def __init__(self, quadruples, constants_map, dir_func):
+    def __init__(self, quadruples, constants_map):
         """Ejecuta cuadruplos en tiempo de ejecucion"""
         self.quadruples = quadruples
-        self.dir_func = dir_func
         self.ip = 0
 
         self.mem_global = MemoryMap("Global")

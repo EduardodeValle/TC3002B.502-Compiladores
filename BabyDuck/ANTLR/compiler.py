@@ -29,10 +29,9 @@ def run_compiler(filepath: str):
     print("==================================================================\n")
 
     obj_quadruples = visitor.quadruples
-    obj_dir_func = visitor.dir_func
     obj_constants = visitor.get_constants_for_vm()
 
-    vm = VirtualMachine(obj_quadruples, obj_constants, obj_dir_func)
+    vm = VirtualMachine(obj_quadruples, obj_constants)
     vm.execute()
 
     print("\n==================================================================")
