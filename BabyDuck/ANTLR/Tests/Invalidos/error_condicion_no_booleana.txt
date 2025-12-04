@@ -1,0 +1,11 @@
+programa errorCondicionNoBooleana;
+vars
+    x : entero;
+inicio
+    {
+        x = 10;
+        si (x + 5) {
+            escribe("Esto no deberia compilar");
+        };
+    }
+fin

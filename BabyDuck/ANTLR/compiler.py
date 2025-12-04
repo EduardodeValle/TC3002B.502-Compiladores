@@ -33,10 +33,9 @@ def run_compiler(filepath: str):
     print("==================================================================\n")
 
     # extraer artefactos del compilador
-    # atributos creados en SemanticVisitor
     obj_quadruples = visitor.quadruples
     obj_dir_func = visitor.dir_func
-    obj_constants = visitor.constant_table
+    obj_constants = visitor.get_constants_for_vm()
 
     vm = VirtualMachine(obj_quadruples, obj_constants, obj_dir_func)
     vm.execute()

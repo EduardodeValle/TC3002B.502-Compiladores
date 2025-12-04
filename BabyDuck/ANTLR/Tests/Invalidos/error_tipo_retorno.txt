@@ -1,0 +1,19 @@
+programa errorTipoRetorno;
+vars
+    x : entero;
+
+entero miFuncion(n : entero) {
+    vars
+        y : flotante;
+    {
+        y = 3.14;
+        devolver y;
+    }
+};
+
+inicio
+    {
+        x = miFuncion(5);
+        escribe(x);
+    }
+fin

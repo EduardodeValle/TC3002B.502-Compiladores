@@ -2,8 +2,8 @@ programa test3;
 vars
     global : entero;
 
-void imprimirDoble(val: entero) {
-    vars 
+nula imprimirDoble(val : entero) {
+    vars
         temp : entero;
     {
         temp = val * 2;

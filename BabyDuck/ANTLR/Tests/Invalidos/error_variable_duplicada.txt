@@ -1,0 +1,10 @@
+programa errorVariableDuplicada;
+vars
+    x : entero;
+    x : flotante;
+inicio
+    {
+        x = 10;
+        escribe(x);
+    }
+fin

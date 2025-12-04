@@ -1,0 +1,44 @@
+programa testExpresiones;
+vars
+    iA, iB, iC : entero;
+    fA, fB : flotante;
+inicio
+    {
+        escribe("--- PRUEBA DE ARITMETICA ENTERA ---");
+        iA = 10;
+        iB = 5;
+
+        iC = iA + iB * 2;
+        escribe("10 + 5 * 2 debe ser 20:");
+        escribe(iC);
+
+        iC = (iA + iB) * 2;
+        escribe("(10 + 5) * 2 debe ser 30:");
+        escribe(iC);
+
+        iC = iA * 2 + iB * 4 - 10;
+        escribe("10 * 2 + 5 * 4 - 10 debe ser 30:");
+        escribe(iC);
+
+        escribe("--- PRUEBA DE ARITMETICA FLOTANTE ---");
+        fA = 5.5;
+        fB = 2.0;
+
+        escribe("(5.5 + 0.5) / (2.0 + 1.0) debe ser 2.0:");
+        escribe( (fA + 0.5) / (fB + 1.0) );
+
+        escribe("--- PRUEBA DE EXPRESIONES BOOLEANAS ---");
+
+        escribe("10 > 5 (True):");
+        escribe(iA > iB);
+
+        escribe("(10 + 5) == 15 (True):");
+        escribe( (iA + iB) == 15 );
+
+        escribe("10 != 10 (False):");
+        escribe(iA != 10);
+
+        escribe("(5 > 3) == (4 < 8) (True):");
+        escribe( (5 > 3) == (4 < 8) );
+    }
+fin

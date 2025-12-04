@@ -1,0 +1,28 @@
+programa testMultipleParams;
+vars
+    resultado : entero;
+    promedio : flotante;
+
+entero suma3(a : entero, b : entero, c : entero) {
+    {
+        devolver a + b + c;
+    }
+};
+
+flotante promedioFloat(x : flotante, y : flotante) {
+    {
+        devolver (x + y) / 2.0;
+    }
+};
+
+inicio
+    {
+        resultado = suma3(10, 20, 30);
+        escribe("Suma de 10, 20, 30:");
+        escribe(resultado);
+
+        promedio = promedioFloat(5.5, 8.3);
+        escribe("Promedio de 5.5 y 8.3:");
+        escribe(promedio);
+    }
+fin

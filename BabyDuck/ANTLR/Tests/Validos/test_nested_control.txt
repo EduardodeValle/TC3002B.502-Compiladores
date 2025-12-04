@@ -1,0 +1,30 @@
+programa testNestedControl;
+vars
+    i, j : entero;
+
+inicio
+    {
+        escribe("Tabla de multiplicar 2x2:");
+        i = 1;
+        mientras (i < 3) haz {
+            j = 1;
+            mientras (j < 3) haz {
+                escribe(i * j);
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+
+        escribe("If anidados:");
+        i = 10;
+        si (i > 5) {
+            escribe("i es mayor que 5");
+            si (i > 8) {
+                escribe("i tambien es mayor que 8");
+                si (i == 10) {
+                    escribe("i es exactamente 10");
+                };
+            };
+        };
+    }
+fin

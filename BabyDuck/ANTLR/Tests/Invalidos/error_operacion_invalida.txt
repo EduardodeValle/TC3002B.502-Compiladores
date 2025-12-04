@@ -1,0 +1,11 @@
+programa errorOperacionInvalida;
+vars
+    x : entero;
+    y : flotante;
+inicio
+    {
+        x = 10;
+        y = 3.14;
+        x = x + y;
+    }
+fin

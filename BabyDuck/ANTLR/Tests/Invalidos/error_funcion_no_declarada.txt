@@ -1,0 +1,9 @@
+programa errorFuncionNoDeclarada;
+vars
+    x : entero;
+inicio
+    {
+        x = funcionQueNoExiste(5);
+        escribe(x);
+    }
+fin

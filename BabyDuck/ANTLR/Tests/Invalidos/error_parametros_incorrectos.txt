@@ -1,0 +1,16 @@
+programa errorParametrosIncorrectos;
+vars
+    x : entero;
+
+entero suma(a : entero, b : entero) {
+    {
+        devolver a + b;
+    }
+};
+
+inicio
+    {
+        x = suma(10);
+        escribe(x);
+    }
+fin

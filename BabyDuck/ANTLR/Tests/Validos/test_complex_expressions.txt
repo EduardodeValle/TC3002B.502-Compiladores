@@ -1,0 +1,35 @@
+programa testComplexExpressions;
+vars
+    a, b, c, d : entero;
+    x : flotante;
+
+inicio
+    {
+        a = 2;
+        b = 3;
+        c = 4;
+        d = 5;
+
+        escribe("Expresiones complejas:");
+
+        d = ((a + b) * (c - 1)) / ((b * 2) - a);
+        escribe("((2+3)*(4-1))/((3*2)-2):");
+        escribe(d);
+
+        d = -(a + b) * (c - d);
+        escribe("-(2+3)*(4-5):");
+        escribe(d);
+
+        x = 10.0;
+        x = ((x + 5.0) * 2.0) / (3.0 + 1.0);
+        escribe("((10+5)*2)/(3+1):");
+        escribe(x);
+
+        a = 1;
+        b = 2;
+        c = 3;
+        si (((a < b) == (b < c)) != (a > c)) {
+            escribe("Expresion booleana compleja evaluo a True");
+        };
+    }
+fin

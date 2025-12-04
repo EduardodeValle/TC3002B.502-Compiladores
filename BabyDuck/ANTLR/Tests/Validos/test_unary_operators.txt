@@ -1,0 +1,32 @@
+programa testUnaryOps;
+vars
+    a, b : entero;
+    c : flotante;
+
+inicio
+    {
+        a = -5;
+        escribe("a = -5:");
+        escribe(a);
+
+        b = +10;
+        escribe("b = +10:");
+        escribe(b);
+
+        b = -a;
+        escribe("b = -a:");
+        escribe(b);
+
+        c = -3.14;
+        escribe("c = -3.14:");
+        escribe(c);
+
+        a = -(2 + 3);
+        escribe("a = -(2 + 3):");
+        escribe(a);
+
+        b = -a * 2;
+        escribe("b = -a * 2:");
+        escribe(b);
+    }
+fin

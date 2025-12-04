@@ -1,0 +1,19 @@
+programa errorFuncionDuplicada;
+
+entero miFuncion(a : entero) {
+    {
+        devolver a * 2;
+    }
+};
+
+entero miFuncion(b : entero) {
+    {
+        devolver b + 1;
+    }
+};
+
+inicio
+    {
+        escribe(miFuncion(5));
+    }
+fin

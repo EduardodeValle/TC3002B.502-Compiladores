@@ -1,0 +1,10 @@
+programa errorVarNoDeclarada;
+vars
+    x : entero;
+inicio
+    {
+        x = 10;
+        y = 20;
+        escribe(x + y);
+    }
+fin

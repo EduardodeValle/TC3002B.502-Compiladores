@@ -1,0 +1,16 @@
+programa errorVoidConRetorno;
+vars
+    x : entero;
+
+nula miVoid() {
+    {
+        devolver 42;
+    }
+};
+
+inicio
+    {
+        miVoid();
+        escribe("Terminado");
+    }
+fin

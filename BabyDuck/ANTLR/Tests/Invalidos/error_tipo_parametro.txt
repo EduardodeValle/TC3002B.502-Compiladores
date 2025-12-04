@@ -1,0 +1,16 @@
+programa errorTipoParametro;
+vars
+    x : entero;
+
+entero doble(n : entero) {
+    {
+        devolver n * 2;
+    }
+};
+
+inicio
+    {
+        x = doble(3.14);
+        escribe(x);
+    }
+fin

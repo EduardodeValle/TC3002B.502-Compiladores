@@ -1,0 +1,40 @@
+programa testMixedTypes;
+vars
+    enteroVar : entero;
+    flotanteVar : flotante;
+
+entero usarEntero(a : entero, b : entero) {
+    {
+        devolver (a * 2) + (b / 2);
+    }
+};
+
+flotante usarFlotante(x : flotante, y : flotante) {
+    {
+        devolver (x + y) * 1.5;
+    }
+};
+
+inicio
+    {
+        enteroVar = 10;
+        flotanteVar = 3.5;
+
+        escribe("Operaciones con enteros:");
+        enteroVar = usarEntero(8, 4);
+        escribe(enteroVar);
+
+        escribe("Operaciones con flotantes:");
+        flotanteVar = usarFlotante(2.0, 3.0);
+        escribe(flotanteVar);
+
+        escribe("Comparaciones mixtas:");
+        si (enteroVar > 10) {
+            escribe("Entero es mayor que 10");
+        };
+
+        si (flotanteVar < 10.0) {
+            escribe("Flotante es menor que 10.0");
+        };
+    }
+fin

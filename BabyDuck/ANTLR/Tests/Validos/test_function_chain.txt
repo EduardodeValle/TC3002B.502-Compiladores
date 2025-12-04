@@ -1,0 +1,37 @@
+programa testFunctionChain;
+vars
+    resultado : entero;
+
+entero suma(a : entero, b : entero) {
+    {
+        devolver a + b;
+    }
+};
+
+entero resta(a : entero, b : entero) {
+    {
+        devolver a - b;
+    }
+};
+
+entero operacion(x : entero, y : entero, z : entero) {
+    vars
+        temp1, temp2 : entero;
+    {
+        temp1 = suma(x, y);
+        temp2 = resta(temp1, z);
+        devolver temp2;
+    }
+};
+
+inicio
+    {
+        resultado = operacion(10, 5, 3);
+        escribe("operacion(10, 5, 3) = (10+5)-3:");
+        escribe(resultado);
+
+        resultado = suma(resta(10, 3), suma(2, 1));
+        escribe("suma(resta(10,3), suma(2,1)):");
+        escribe(resultado);
+    }
+fin

@@ -1,0 +1,40 @@
+programa testVoidFunctions;
+vars
+    contador : entero;
+
+nula incrementar() {
+    {
+        contador = contador + 1;
+        devolver;
+    }
+};
+
+nula imprimir3Veces(valor : entero) {
+    vars
+        i : entero;
+    {
+        i = 0;
+        mientras (i < 3) haz {
+            escribe(valor);
+            i = i + 1;
+        };
+    }
+};
+
+inicio
+    {
+        contador = 0;
+        escribe("Contador inicial:");
+        escribe(contador);
+
+        incrementar();
+        incrementar();
+        incrementar();
+
+        escribe("Contador despues de 3 incrementos:");
+        escribe(contador);
+
+        escribe("Imprimiendo 42 tres veces:");
+        imprimir3Veces(42);
+    }
+fin

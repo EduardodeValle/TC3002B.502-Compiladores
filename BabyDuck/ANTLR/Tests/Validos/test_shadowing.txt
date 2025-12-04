@@ -1,0 +1,30 @@
+programa testShadowing;
+vars
+    x : entero;
+    y : flotante;
+
+entero testLocal(x : entero) {
+    vars
+        y : entero;
+    {
+        y = x * 2;
+        devolver y;
+    }
+};
+
+inicio
+    {
+        x = 10;
+        y = 3.14;
+
+        escribe("Variables globales:");
+        escribe(x);
+        escribe(y);
+
+        x = testLocal(5);
+        escribe("Despues de llamar testLocal(5):");
+        escribe(x);
+        escribe("Variable global y sigue siendo:");
+        escribe(y);
+    }
+fin

@@ -1,0 +1,33 @@
+programa testNestedCalls;
+vars
+    resultado : entero;
+
+entero doble(n : entero) {
+    {
+        devolver n * 2;
+    }
+};
+
+entero triple(n : entero) {
+    {
+        devolver n * 3;
+    }
+};
+
+entero calcular(a : entero, b : entero) {
+    {
+        devolver a + b;
+    }
+};
+
+inicio
+    {
+        resultado = calcular(doble(5), triple(3));
+        escribe("calcular(doble(5), triple(3)):");
+        escribe(resultado);
+
+        resultado = doble(doble(2));
+        escribe("doble(doble(2)):");
+        escribe(resultado);
+    }
+fin
